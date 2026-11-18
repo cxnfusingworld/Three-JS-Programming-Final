@@ -25,7 +25,7 @@ const world = new World(scene);
 const player = new Player(scene, input, camera);
 
 const renderScene = new RenderPass(scene, camera);
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 4, 1, 1);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 0.6, 1);
 const outputPass = new OutputPass();
 const composer = new EffectComposer(renderer);
 

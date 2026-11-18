@@ -23,7 +23,7 @@ export class Player {
         const material = new THREE.MeshStandardMaterial({ 
             color: new THREE.Color().setRGB(0.2, 0.4, 1),
             emissive: new THREE.Color().setRGB(0.2, 0.4, 1),
-            emissiveIntensity: 4,
+            emissiveIntensity: 2,
         });
         this.mesh = new THREE.Mesh(geometry, material);
         
