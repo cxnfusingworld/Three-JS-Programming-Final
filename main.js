@@ -33,7 +33,6 @@ const composer = new EffectComposer(renderer);
 
 function animate() {
     requestAnimationFrame(animate);
-    
     const dt = clock.getDelta();
     player.update(dt);
     camera.lookAt(player.mesh.position);

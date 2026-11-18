@@ -1,11 +1,11 @@
 //~ Imports
 
 import * as THREE from 'three';
+import * as Config from '../config.json'
 
 //~ Constants
 
-const GRAVITY = 35;
-
+const GRAVITY = Config.GRAVITY;
 const DIAGONAL_MOVE_FACTOR = Math.SQRT1_2;
 
 //~ Public API
@@ -14,16 +14,16 @@ export class Player {
     constructor(scene, input, camera) {
         this.input = input;
         this.camera = camera;
-
-        this.speed = 10;
-        this.acceleration = 10;
-        this.jumpForce = 14;
+        
+        this.speed = Config.WALK_SPEED;
+        this.acceleration = Config.WALK_ACCELERATION;
+        this.jumpForce = Config.JUMP_FORCE;
 
         const geometry = new THREE.CapsuleGeometry(0.5, 1, 10, 20);
         const material = new THREE.MeshStandardMaterial({ 
-            color: new THREE.Color().setRGB(0.2, 0.2, 1),
-            emissive: new THREE.Color().setRGB(0.2, 0.2, 1),
-            emissiveIntensity: 4,
+            color: new THREE.Color().setRGB(0.2, 0.4, 1),
+            emissive: new THREE.Color().setRGB(0.2, 0.4, 1),
+            emissiveIntensity: 2,
         });
         this.mesh = new THREE.Mesh(geometry, material);
         
@@ -35,13 +35,15 @@ export class Player {
         this.isGrounded = true;
     }
 
+    //~ Public Methods
+
     update(dt) {
         let moveX = 0;
         let moveZ = 0;
-        if (this.input.isKeyDown('KeyW')) moveZ -= 1;
-        if (this.input.isKeyDown('KeyS')) moveZ += 1;
-        if (this.input.isKeyDown('KeyA')) moveX -= 1;
-        if (this.input.isKeyDown('KeyD')) moveX += 1;
+        if (this.input.isKeyDown('KeyW') || this.input.isKeyDown('ArrowUp')) moveZ -= 1;
+        if (this.input.isKeyDown('KeyS') || this.input.isKeyDown('ArrowDown')) moveZ += 1;
+        if (this.input.isKeyDown('KeyA') || this.input.isKeyDown('ArrowLeft')) moveX -= 1;
+        if (this.input.isKeyDown('KeyD') || this.input.isKeyDown('ArrowRight')) moveX += 1;
 
         if (moveX !== 0 && moveZ !== 0) {
             moveX *= DIAGONAL_MOVE_FACTOR;
@@ -66,7 +68,7 @@ export class Player {
         this.velocity.x = THREE.MathUtils.lerp(this.velocity.x, targetX, this.acceleration * dt);
         this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, targetZ, this.acceleration * dt);
 
-        if (this.input.wasKeyDown('Space', 0.1) && this.isGrounded) {
+        if (this.input.wasKeyDown('Space', Config.JUMP_BUFFER) && this.isGrounded) {
             this.velocity.y = this.jumpForce;
             this.isGrounded = false;
         }
