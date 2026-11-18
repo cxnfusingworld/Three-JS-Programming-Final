@@ -1,14 +1,28 @@
 //~ Public API
 
 export class InputHandler {
-    constructor() {
+    constructor(clock) {
+        this.clock = clock;
+        
         this.keys = {};
-        window.addEventListener('keydown', (e) => this.keys[e.code] = true);
-        window.addEventListener('keyup', (e) => this.keys[e.code] = false);
+        this.keyPressHistory = {};
+        
+        window.addEventListener('keydown', (input) => { 
+            this.keys[input.code] = true;
+            this.keyPressHistory[input.code] = clock.getElapsedTime();
+        });
+        window.addEventListener('keyup', (input) => {
+            this.keys[input.code] = false;
+            this.keyPressHistory[input.code] = clock.getElapsedTime();
+        });
     }
 
     isKeyDown(code) {
         return !!this.keys[code];
+    }
+
+    wasKeyDown(code, timePeriod) {
+        return this.isKeyDown(code) || !!this.keyPressHistory[code] && this.clock.getElapsedTime() - this.keyPressHistory[code] <= timePeriod;
     }
 }
 

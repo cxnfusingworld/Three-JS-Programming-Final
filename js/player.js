@@ -8,7 +8,7 @@ import { randomColor } from './utils.js';
 const GRAVITY = 30;
 const JUMP_FORCE = 12;
 
-const DIAGONAL_MOVE_FACTOR = 1 / Math.sqrt(2)
+const DIAGONAL_MOVE_FACTOR = 1 / Math.sqrt(2);
 
 //~ Public API
 
@@ -30,7 +30,6 @@ export class Player {
     }
 
     update(dt) {
-        // --- 1. WASD Movement ---
         let moveX = 0;
         let moveZ = 0;
         if (this.input.isKeyDown('KeyW')) moveZ -= 1;
@@ -46,7 +45,7 @@ export class Player {
         this.mesh.position.x += moveX * this.speed * dt;
         this.mesh.position.z += moveZ * this.speed * dt;
 
-        if (this.input.isKeyDown('Space') && this.isGrounded) {
+        if (this.input.wasKeyDown('Space', 0.1) && this.isGrounded) {
             this.velocity.y = JUMP_FORCE;
             this.isGrounded = false;
         }

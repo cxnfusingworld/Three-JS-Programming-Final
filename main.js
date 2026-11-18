@@ -4,8 +4,11 @@ import * as THREE from 'three';
 import { InputHandler } from './js/utils.js';
 import { World } from './js/world.js';
 import { Player } from './js/player.js';
+import { Spike } from './js/spike.js';
 
 //~ Constants
+
+const clock = new THREE.Clock();
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1e222a);
@@ -19,11 +22,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
-const input = new InputHandler();
+const input = new InputHandler(clock);
 const world = new World(scene);
 const player = new Player(scene, input);
-
-const clock = new THREE.Clock();
 
 //~ Helper Functions
 
@@ -39,6 +40,8 @@ function animate() {
 //~ Main
 
 animate();
+
+new Spike(scene, 5, 0)
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
