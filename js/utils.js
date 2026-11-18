@@ -26,8 +26,10 @@ export class InputHandler {
     }
 }
 
-//~ Public Methods
+export class Randomizer {
+    constructor() {}
 
-export function randomColor() {
-    return Math.floor(Math.random() * (256 ** 3 - 1));
+    randomColor() {
+        return Math.floor(Math.random() * (256 ** 3 - 1));
+    }
 }

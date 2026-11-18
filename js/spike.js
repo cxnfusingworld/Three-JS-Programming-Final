@@ -7,7 +7,11 @@ import * as THREE from 'three';
 export class Spike {
     constructor(scene, x, z) {
         const geometry = new THREE.ConeGeometry(0.5, 1.5, 20);
-        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(1, 0, 0) });
+        const material = new THREE.MeshStandardMaterial({ 
+            color: new THREE.Color().setRGB(1, 0, 0),
+            emissive: new THREE.Color().setRGB(1, 0, 0),
+            emissiveIntensity: 4,
+         });
 
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.set(x, 0.75, z);
