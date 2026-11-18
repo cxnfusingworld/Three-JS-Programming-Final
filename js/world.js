@@ -23,14 +23,14 @@ export class World {
 
     createBaseplate() {
         const geometry = new THREE.PlaneGeometry(30, 30);
-        const material = new THREE.MeshStandardMaterial({ color: 0x2e3440 });
+        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(0.1, 1, 0.2) });
         this.floor = new THREE.Mesh(geometry, material);
         
         this.floor.rotation.x = -Math.PI / 2;
         this.floor.receiveShadow = true;
         this.scene.add(this.floor);
 
-        const grid = new THREE.GridHelper(30, 30, 0x88c0d0, 0x4c566a);
+        const grid = new THREE.GridHelper(30, 30, new THREE.Color().setRGB(0, 0.2, 0.05), new THREE.Color().setRGB(0.1, 1, 0.2));
         this.scene.add(grid);
     }
 }
