@@ -1,7 +1,6 @@
 //~ Imports
 
 import * as THREE from 'three';
-import { randomColor } from './utils.js';
 
 //~ Constants
 
