@@ -16,10 +16,6 @@ const PlayerMaterial = new THREE.MeshStandardMaterial({
     emissiveIntensity: 4,
 });
 
-//~ Variables
-
-let isMeshAdded = false;
-
 //~ Helper Functions
 
 /**
@@ -27,7 +23,10 @@ let isMeshAdded = false;
  */
 function syncPlayerMesh(id) {
     let playerMesh = new THREE.Mesh(PlayerGeometry, PlayerMaterial);
-    PlayerMeshes[id] = playerMesh
+    PlayerMeshes[id] = {
+        Mesh: playerMesh,
+        MeshAdded: false,
+    };
 }
 
 //~ Public API
@@ -43,16 +42,17 @@ export function syncMesh(meshId) {
 
 onPlayerAdded(syncPlayerMesh);
 onDataRecieved("PLAYER_UPDATE", function (data) {
-    let playerMesh = PlayerMeshes[data.id];
+    let playerData = PlayerMeshes[data.id];
+    if (!playerData) return;
 
-    if (!isMeshAdded && State.World) {
+    if (!playerData.MeshAdded && State.World) {
         const targetScene = State.World.scene || State.World;
-        targetScene.add(playerMesh);
-        isMeshAdded = true;
+        targetScene.add(playerData.Mesh);
+        playerData.MeshAdded = true;
     }
 
-    playerMesh.position.x = data.x;
-    playerMesh.position.y = data.y;
-    playerMesh.position.z = data.z;
-    playerMesh.rotation.y = data.rotation;
+    playerData.Mesh.position.x = data.x;
+    playerData.Mesh.position.y = data.y;
+    playerData.Mesh.position.z = data.z;
+    playerData.Mesh.rotation.y = data.rotation;
 }, "PLAYER_SYNC");
