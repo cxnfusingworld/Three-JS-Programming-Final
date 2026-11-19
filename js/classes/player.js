@@ -2,7 +2,8 @@
 
 import * as THREE from 'three';
 import { Sword } from './sword.js'
-import { Config } from '../config.js'
+import { Config } from '../../config.js'
+import { State } from '../state.js';
 
 //~ Constants
 
@@ -12,13 +13,12 @@ const DIAGONAL_MOVE_FACTOR = Math.SQRT1_2;
 //~ Public API
 
 export class Player {
-    constructor(scene, input, camera, world) {
+    constructor(scene, input) {
         this.scene = scene;
         this.input = input;
-        this.camera = camera;
-        this.world = world;
+        this.world = State.World;
 
-        this.sword = new Sword(scene, this, input, camera, world);
+        this.sword = new Sword(scene, this, input);
         
         this.speed = Config.WALK_SPEED;
         this.acceleration = Config.WALK_ACCELERATION;
@@ -56,7 +56,7 @@ export class Player {
         }
 
         const cameraForward = new THREE.Vector3();
-        this.camera.getWorldDirection(cameraForward);
+        State.Camera.getWorldDirection(cameraForward);
         cameraForward.y = 0;
         cameraForward.normalize();
 

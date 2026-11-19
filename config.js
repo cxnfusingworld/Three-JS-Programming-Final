@@ -4,5 +4,7 @@ export const Config = {
     "JUMP_BUFFER": 0.1,
     "WALK_SPEED": 10,
     "WALK_ACCELERATION": 10,
-    "JUMP_FORCE": 12
+    "JUMP_FORCE": 12,
+
+    "VIEW_SIZE": 10
 }

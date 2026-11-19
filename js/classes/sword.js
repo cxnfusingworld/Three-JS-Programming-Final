@@ -1,6 +1,7 @@
 //~ Imports
 
 import * as THREE from 'three';
+import { State } from '../state.js';
 
 //~ Constants
 
@@ -9,12 +10,10 @@ import * as THREE from 'three';
 //~ Public API
 
 export class Sword {
-    constructor(scene, player, input, camera, world) {
+    constructor(scene, player, input) {
         this.scene = scene;
         this.player = player;
         this.input = input;
-        this.camera = camera;
-        this.world = world;
 
 	    this.raycaster = new THREE.Raycaster();
 		this.pointer = new THREE.Vector2();
@@ -48,9 +47,9 @@ export class Sword {
             (lastMouseInput.clientX / window.innerWidth) * 2 - 1, 
             -(lastMouseInput.clientY / window.innerHeight) * 2 + 1
         );
-        this.raycaster.setFromCamera(this.pointer, this.camera);
+        this.raycaster.setFromCamera(this.pointer, State.Camera);
 
-        let intersects = this.raycaster.intersectObjects([this.world], false);
+        let intersects = this.raycaster.intersectObjects([State.World.floor], false);
 
         if (intersects.length > 0) {
             let hitPosition = intersects[0].point;
