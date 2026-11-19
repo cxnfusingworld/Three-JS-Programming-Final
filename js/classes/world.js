@@ -1,8 +1,8 @@
 //~ Imports
 
 import * as THREE from 'three';
-import { Config } from '../../config.js'
-import { State } from '../state.js';
+import { Config } from '../core/config.js'
+import { State } from '../core/state.js';
 
 //~ Public API
 

@@ -2,9 +2,9 @@
 
 import * as THREE from 'three';
 import { Sword } from './sword.js'
-import { Config } from '../../config.js'
-import { State } from '../state.js';
-import { sendData } from '../net.js';
+import { Config } from '../core/config.js'
+import { State } from '../core/state.js';
+import { sendData } from '../core/net.js';
 
 //~ Constants
 

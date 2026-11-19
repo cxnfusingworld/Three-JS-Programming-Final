@@ -1,7 +1,7 @@
 //~ Imports
 
 import * as THREE from 'three';
-import { State } from '../state.js';
+import { State } from '../core/state.js';
 
 //~ Public API
 

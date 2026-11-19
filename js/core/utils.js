@@ -14,7 +14,7 @@ export class InputHandler {
 
         this.lastMouseInput = null;
         
-        window.addEventListener('keydown', (input) => { 
+        window.addEventListener('keydown', (input) => {
             this.keys[input.code] = true;
             this.keyPressHistory[input.code] = clock.getElapsedTime();
         });

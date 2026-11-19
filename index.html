@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Three.js Programming Final</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #111; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #111;
+        }
     </style>
 </head>
+
 <body>
     <script type="importmap">
         {
@@ -18,12 +24,18 @@
         }
     </script>
     <script type="module" src="./main.js"></script>
-    <div id="ui-container" style="position: absolute; top: 20px; left: 20px; z-index: 10; color: white; font-family: monospace; background: rgba(0, 0, 0, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #333;">
-    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #0ff;">Multiplayer Lobby</h3>
-    <p style="margin: 0 0 10px 0; font-size: 12px;">Your ID: <span id="my-id" style="color: #ff0;">Generating...</span></p>
-    
-    <input type="text" id="friend-id-input" placeholder="Paste Host ID here..." style="padding: 6px; width: 180px; background: #222; border: 1px solid #444; color: white; border-radius: 4px; margin-right: 5px;">
-    <button id="connect-btn" style="padding: 6px 12px; background: #0ff; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Connect</button>
-</div>
+
+    <div id="ui-container"
+        style="position: absolute; top: 20px; left: 20px; z-index: 10; color: white; font-family: monospace; background: rgba(0, 0, 0, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #333;">
+        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #0ff;">Multiplayer Lobby</h3>
+        <p style="margin: 0 0 10px 0; font-size: 12px;">Your ID: <span id="my-id"
+                style="color: #ff0;">Generating...</span></p>
+
+        <input type="text" id="friend-id-input" placeholder="Paste Host ID here..."
+            style="padding: 6px; width: 180px; background: #222; border: 1px solid #444; color: white; border-radius: 4px; margin-right: 5px;">
+        <button id="connect-btn"
+            style="padding: 6px 12px; background: #0ff; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Connect</button>
+    </div>
 </body>
+
 </html>

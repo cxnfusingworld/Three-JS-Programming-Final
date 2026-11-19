@@ -6,16 +6,18 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-import { InputHandler } from './js/utils.js';
+import { InputHandler } from './js/core/utils.js';
+import { State } from './js/core/state.js';
+import { data } from './js/core/data.js';
+
 import { World } from './js/classes/world.js';
 import { Player } from './js/classes/player.js';
 import { Spike } from './js/classes/spike.js';
-import { Config } from './config.js';
-import { State } from './js/state.js';
-import { data } from './js/data.js';
 
-import './js/net.js';
-import './js/sync.js';
+import { Config } from './js/core/config.js';
+
+import './js/core/net.js';
+import './js/core/sync.js';
 
 //~ Constants
 
@@ -74,8 +76,6 @@ composer.addPass(bloomPass);
 composer.addPass(outputPass);
 
 document.body.appendChild(renderer.domElement);
-
-new Spike(scene, 5, 0)
 
 animate();
 
