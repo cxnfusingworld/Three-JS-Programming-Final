@@ -14,26 +14,56 @@ import { Enum } from './enums.js';
   * @property {number} z
   * @property {number} rotation
   */
+
+/**
+  * @typedef {Object} SyncType_PlayerAdded
+  * @property {"PLAYER_ADDED"} type
+  * @property {any} conn
+  */
  
  /**
   * @typedef {Object} SyncTypeData
   * @property {SyncType_PlayerUpdate} PLAYER_UPDATE
+  * @property {SyncType_PlayerAdded} PLAYER_ADDED
   */
 
 //~ Constants
 
 const peer = new Peer();
+
 const dataRecievedCallbacks = {};
 const playerAddedCallbacks = {};
 
-//~ Variables
+const connectedPeers = {}
 
-let conn = null;
+//~ Variables
 
 /**
  * @type {string?}
  */
 let clientId = null;
+
+//~ Helper Functions
+
+function initPlayer(conn) {
+    if (connectedPeers[conn.peer]) return;
+
+    connectedPeers[conn.peer] = conn;
+    
+    Object.keys(playerAddedCallbacks).forEach(key => {
+        playerAddedCallbacks[key](conn.peer);
+    });
+
+    conn.on('data', (data) => {
+        if (data.type == Enum.SyncType.PlayerAdded) {
+            initPlayer(data.conn)
+            return;
+        }
+        Object.keys(dataRecievedCallbacks).forEach(key => {
+            dataRecievedCallbacks[key](data);
+        });
+    });
+}
 
 //~ Main
 
@@ -43,16 +73,9 @@ peer.on('open', (id) => {
     clientId = id;
 });
 
-peer.on('connection', (incomingConn) => {
-    conn = incomingConn;
+peer.on('connection', (conn) => {
     console.log('A player connected to us!');
-    console.log(conn.id);
-
-    Object.keys(playerAddedCallbacks).forEach(key => {
-        playerAddedCallbacks[key](conn.id);
-    });
-    
-    initConnectionHandlers();
+    initPlayer(conn);
 });
 
 document.getElementById('connect-btn').addEventListener('click', () => {
@@ -63,23 +86,15 @@ document.getElementById('connect-btn').addEventListener('click', () => {
     }
 
     console.log('Connecting to:', friendId);
-    conn = peer.connect(friendId);
-    
+
+    let conn = peer.connect(friendId);
     conn.on('open', () => {
         console.log('Successfully connected to the host!');
         alert('Connected successfully!');
+        
+        initPlayer(conn);
     });
-
-    initConnectionHandlers();
 });
-
-function initConnectionHandlers() {
-    conn.on('data', (data) => {
-        Object.keys(dataRecievedCallbacks).forEach(key => {
-            dataRecievedCallbacks[key](data);
-        });
-    });
-}
 
 //~ Public API
 
@@ -87,12 +102,18 @@ function initConnectionHandlers() {
  * @template {keyof SyncTypeData} T
  * @param {T} type
  * @param {SyncTypeData[T]} data
+ * @param {any?} conn
  * @returns {void}
  */
-export function sendData(type, data) {
-    if (!conn || !conn.open) return;
+export function sendData(type, data, conn) {
     data.type = type;
-    conn.send(data);
+    if (conn) conn.send(data);
+    else {
+        Object.keys(connectedPeers).forEach(id => {
+            let conn = connectedPeers[id]
+            conn.send(data);
+        });
+    }    
 }
 
 /**
