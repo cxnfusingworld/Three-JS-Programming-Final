@@ -18,13 +18,19 @@ import { Enum } from './enums.js';
 /**
   * @typedef {Object} SyncType_PlayerAdded
   * @property {"PLAYER_ADDED"} type
-  * @property {any} conn
+  * @property {string} id
+  */
+ 
+/**
+  * @typedef {Object} SyncType_InvokeOtherPlayers
+  * @property {"INVOKE_OTHERS"} type
   */
  
  /**
   * @typedef {Object} SyncTypeData
   * @property {SyncType_PlayerUpdate} PLAYER_UPDATE
   * @property {SyncType_PlayerAdded} PLAYER_ADDED
+  * @property {SyncType_InvokeOtherPlayers} INVOKE_OTHERS
   */
 
 //~ Constants
@@ -47,6 +53,8 @@ let clientId = null;
 
 function initPlayer(conn) {
     if (connectedPeers[conn.peer]) return;
+    
+    console.log(`Initializing other player with id ${conn.peer}.`);
 
     connectedPeers[conn.peer] = conn;
     
@@ -55,14 +63,32 @@ function initPlayer(conn) {
     });
 
     conn.on('data', (data) => {
-        if (data.type == Enum.SyncType.PlayerAdded) {
-            initPlayer(data.conn)
+        if (data.type == Enum.SyncType.PlayerAdded) {            
+            let conn = peer.connect(data.id)
+
+            conn.on('open', () => {
+                initPlayer(conn);
+            });
+
             return;
         }
+
+        if (data.type == Enum.SyncType.InvokeOtherPlayers) {
+            Object.keys(connectedPeers).forEach(id => {
+                if (id == conn.peer) return;
+                console.log(`Sending other peer id to ${conn.peer}, with id ${id}.`)
+                sendData(Enum.SyncType.PlayerAdded, { id: id }, conn);
+            });
+
+            return;
+        }
+
         Object.keys(dataRecievedCallbacks).forEach(key => {
             dataRecievedCallbacks[key](data);
         });
     });
+
+    sendData(Enum.SyncType.InvokeOtherPlayers, {}, conn);
 }
 
 //~ Main

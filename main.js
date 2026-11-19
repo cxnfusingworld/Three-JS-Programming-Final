@@ -12,7 +12,6 @@ import { data } from './js/core/data.js';
 
 import { World } from './js/classes/world.js';
 import { Player } from './js/classes/player.js';
-import { Spike } from './js/classes/spike.js';
 
 import { Config } from './js/core/config.js';
 
@@ -45,7 +44,8 @@ const composer = new EffectComposer(renderer);
 function animate() {
     requestAnimationFrame(animate);
 
-    const dt = clock.getDelta();
+    let dt = clock.getDelta();
+    dt = Math.min(dt, 0.1);
 
     player.update(dt);
     world.update(dt);
