@@ -3,10 +3,6 @@
 import * as THREE from 'three';
 import { State } from '../state.js';
 
-//~ Constants
-
-
-
 //~ Public API
 
 export class Sword {
@@ -34,8 +30,6 @@ export class Sword {
         this.mesh.castShadow = true;
         scene.add(this.mesh);
     }
-
-    //~ Public Methods
 
     update(dt) {
         this.mesh.position.copy(this.player.mesh.position);

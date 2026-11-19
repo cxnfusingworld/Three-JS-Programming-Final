@@ -12,6 +12,10 @@ import { Player } from './js/classes/player.js';
 import { Spike } from './js/classes/spike.js';
 import { Config } from './config.js';
 import { State } from './js/state.js';
+import { data } from './js/data.js';
+
+import './js/net.js';
+import './js/sync.js';
 
 //~ Constants
 
@@ -51,9 +55,11 @@ function animate() {
 
 //~ Main
 
+State.Scene = scene;
 State.World = world;
 State.Camera = camera;
 State.Player = player;
+State.Data = data;
 
 scene.background = new THREE.Color(0x1e222a);
 
@@ -74,7 +80,13 @@ new Spike(scene, 5, 0)
 animate();
 
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const newAspectRatio = window.innerWidth / window.innerHeight;
+
+    camera.left = -Config.VIEW_SIZE * newAspectRatio;
+    camera.right = Config.VIEW_SIZE * newAspectRatio;
+    camera.top = Config.VIEW_SIZE;
+    camera.bottom = -Config.VIEW_SIZE;
+
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight);

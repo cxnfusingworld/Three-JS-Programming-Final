@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { Sword } from './sword.js'
 import { Config } from '../../config.js'
 import { State } from '../state.js';
+import { sendData } from '../net.js';
 
 //~ Constants
 
@@ -24,6 +25,9 @@ export class Player {
         this.acceleration = Config.WALK_ACCELERATION;
         this.jumpForce = Config.JUMP_FORCE;
 
+        this.velocity = new THREE.Vector3(0, 0, 0);
+        this.isGrounded = true;
+
         const geometry = new THREE.CapsuleGeometry(0.5, 1, 10, 20);
         const material = new THREE.MeshStandardMaterial({ 
             color: new THREE.Color().setRGB(0.2, 0.4, 1),
@@ -35,13 +39,10 @@ export class Player {
         this.mesh.position.set(0, 1, 0);
         this.mesh.castShadow = true;
         scene.add(this.mesh);
-
-        this.velocity = new THREE.Vector3(0, 0, 0);
-        this.isGrounded = true;
     }
 
     //~ Public Methods
-
+    
     update(dt) {
         let moveX = 0;
         let moveZ = 0;
@@ -86,6 +87,9 @@ export class Player {
         this.mesh.position.z += this.velocity.z * dt;
         this.mesh.position.y += this.velocity.y * dt;
 
+        this.mesh.position.x = Math.min(Math.max(-Config.MAP_SIZE / 2, this.mesh.position.x), Config.MAP_SIZE / 2);
+        this.mesh.position.z = Math.min(Math.max(-Config.MAP_SIZE / 2, this.mesh.position.z), Config.MAP_SIZE / 2);
+
         if (this.mesh.position.y <= 1) {
             this.mesh.position.y = 1;
             this.velocity.y = 0;
@@ -93,5 +97,13 @@ export class Player {
         }
 
         this.sword.update(dt);
+
+        sendData({
+            type: 'player-update',
+            x: this.mesh.position.x,
+            y: this.mesh.position.y,
+            z: this.mesh.position.z,
+            rotation: this.mesh.rotation.y
+        });
     }
 }

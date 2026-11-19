@@ -37,7 +37,7 @@ export class World {
     }
 
     createBaseplate() {
-        const geometry = new THREE.PlaneGeometry(1000, 1000);
+        const geometry = new THREE.PlaneGeometry(Config.MAP_SIZE, Config.MAP_SIZE);
         const material = new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(0.1, 1, 0.2) });
         this.floor = new THREE.Mesh(geometry, material);
         
@@ -45,11 +45,11 @@ export class World {
         this.floor.receiveShadow = true;
         this.scene.add(this.floor);
 
-        const grid = new THREE.GridHelper(1000, 1000, new THREE.Color().setRGB(0, 0.23, 0.1), new THREE.Color().setRGB(0.08, 0.8, 0.15));
+        const grid = new THREE.GridHelper(Config.MAP_SIZE, Config.MAP_SIZE, new THREE.Color().setRGB(0, 0.23, 0.1), new THREE.Color().setRGB(0.08, 0.8, 0.15));
         this.scene.add(grid);
     }
 
-    update(dt) {
+    update() {
         let player = State.Player && State.Player.mesh;
         let camera = State.Camera;
         if (!player || !camera) return;

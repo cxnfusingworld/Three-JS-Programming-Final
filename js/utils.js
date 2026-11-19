@@ -40,10 +40,7 @@ export class InputHandler {
     }
 
     mouseMoved(callback, name) {
-        name = name || toString(this.mouseMovedCallbacks.length)
-
         this.mouseMovedCallbacks[name] = callback;
-
         return name;
     }
 }
