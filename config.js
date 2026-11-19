@@ -1,4 +1,4 @@
-{
+export const Config = {
     "GRAVITY": 30,
 
     "JUMP_BUFFER": 0.1,

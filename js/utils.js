@@ -1,3 +1,7 @@
+//~ Imports
+
+import * as THREE from 'three';
+
 //~ Public API
 
 export class InputHandler {
@@ -6,6 +10,9 @@ export class InputHandler {
         
         this.keys = {};
         this.keyPressHistory = {};
+        this.mouseMovedCallbacks = {};
+
+        this.lastMouseInput = null;
         
         window.addEventListener('keydown', (input) => { 
             this.keys[input.code] = true;
@@ -15,6 +22,13 @@ export class InputHandler {
             this.keys[input.code] = false;
             this.keyPressHistory[input.code] = clock.getElapsedTime();
         });
+        window.addEventListener('mousemove', (input) => {
+            this.lastMouseInput = input;
+            
+            Object.keys(this.mouseMovedCallbacks).forEach(key => {
+                this.mouseMovedCallbacks[key](input);                
+            });
+        })
     }
 
     isKeyDown(code) {
@@ -23,6 +37,14 @@ export class InputHandler {
 
     wasKeyDown(code, timePeriod) {
         return this.isKeyDown(code) || !!this.keyPressHistory[code] && this.clock.getElapsedTime() - this.keyPressHistory[code] <= timePeriod;
+    }
+
+    mouseMoved(callback, name) {
+        name = name || toString(this.mouseMovedCallbacks.length)
+
+        this.mouseMovedCallbacks[name] = callback;
+
+        return name;
     }
 }
 

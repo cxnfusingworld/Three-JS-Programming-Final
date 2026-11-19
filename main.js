@@ -13,16 +13,19 @@ import { Spike } from './js/spike.js';
 
 //~ Constants
 
+const aspectRatio = window.innerWidth / window.innerHeight;
+const viewSize = 10;
+
 const clock = new THREE.Clock();
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.OrthographicCamera(-viewSize * aspectRatio, viewSize * aspectRatio, viewSize, -viewSize, 0.1, 5000);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 const input = new InputHandler(clock);
 const world = new World(scene);
-const player = new Player(scene, input, camera);
+const player = new Player(scene, input, camera, world);
 
 const renderScene = new RenderPass(scene, camera);
 const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0, 1);
@@ -33,19 +36,23 @@ const composer = new EffectComposer(renderer);
 
 function animate() {
     requestAnimationFrame(animate);
+
     const dt = clock.getDelta();
+
     player.update(dt);
-    camera.lookAt(player.mesh.position);
+    
+    camera.position.set(player.mesh.position.x + 20, 20, player.mesh.position.z + 20);
+    camera.lookAt(new THREE.Vector3(player.mesh.position.x, 1, player.mesh.position.z));
 
     composer.render();
 }
 
 //~ Main
 
-scene.background = new THREE.Color(0x1e222a);
-
-camera.position.set(0, 8, 12);
+camera.position.set(20, 20, 20);
 camera.lookAt(0, 0, 0);
+
+scene.background = new THREE.Color(0x1e222a);
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;

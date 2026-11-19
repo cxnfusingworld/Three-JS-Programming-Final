@@ -1,7 +1,8 @@
 //~ Imports
 
 import * as THREE from 'three';
-import * as Config from '../config.json'
+import { Sword } from './sword.js'
+import { Config } from '../config.js'
 
 //~ Constants
 
@@ -11,9 +12,13 @@ const DIAGONAL_MOVE_FACTOR = Math.SQRT1_2;
 //~ Public API
 
 export class Player {
-    constructor(scene, input, camera) {
+    constructor(scene, input, camera, world) {
+        this.scene = scene;
         this.input = input;
         this.camera = camera;
+        this.world = world;
+
+        this.sword = new Sword(scene, this, input, camera, world);
         
         this.speed = Config.WALK_SPEED;
         this.acceleration = Config.WALK_ACCELERATION;
@@ -23,7 +28,7 @@ export class Player {
         const material = new THREE.MeshStandardMaterial({ 
             color: new THREE.Color().setRGB(0.2, 0.4, 1),
             emissive: new THREE.Color().setRGB(0.2, 0.4, 1),
-            emissiveIntensity: 2,
+            emissiveIntensity: 4,
         });
         this.mesh = new THREE.Mesh(geometry, material);
         
@@ -86,5 +91,7 @@ export class Player {
             this.velocity.y = 0;
             this.isGrounded = true;
         }
+
+        this.sword.update(dt);
     }
 }
