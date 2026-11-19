@@ -2,6 +2,13 @@
 
 import Peer from 'peerjs';
 
+//~ Types
+
+/**
+ * @typedef {Object} Data
+ * @property {string} type
+ */
+
 //~ Constants
 
 const peer = new Peer();
@@ -52,12 +59,21 @@ function initConnectionHandlers() {
 
 //~ Public API
 
+/**
+ * @param {Data} data 
+ */
 export function sendData(data) {
     if (conn && conn.open) {
         conn.send(data);
     }
 }
 
+/**
+ * @template K
+ * @param {(data: Data) => (any)} callback 
+ * @param {K & string} name 
+ * @returns {K}
+ */
 export function onDataRecieved(callback, name) {
     dataRecievedCallbacks[name] = callback;
     return name;

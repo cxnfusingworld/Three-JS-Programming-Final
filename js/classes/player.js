@@ -1,10 +1,15 @@
 //~ Imports
 
 import * as THREE from 'three';
+
 import { Sword } from './sword.js'
+
 import { Config } from '../core/config.js'
 import { State } from '../core/state.js';
 import { sendData } from '../core/net.js';
+import { InputHandler } from '../core/utils.js';
+
+import { Dash } from '../abilities/dash.js';
 
 //~ Constants
 
@@ -14,6 +19,10 @@ const DIAGONAL_MOVE_FACTOR = Math.SQRT1_2;
 //~ Public API
 
 export class Player {
+    /**
+     * @param {THREE.scene} scene 
+     * @param {InputHandler} input 
+     */
     constructor(scene, input) {
         this.scene = scene;
         this.input = input;
@@ -39,10 +48,18 @@ export class Player {
         this.mesh.position.set(0, 1, 0);
         this.mesh.castShadow = true;
         scene.add(this.mesh);
+
+        input.onKeyDown(function(input) {            
+            if (input.code !== "KeyQ") return;
+            Dash.activate()
+        })
     }
 
     //~ Public Methods
     
+    /**
+     * @param {number} dt 
+     */
     update(dt) {
         let moveX = 0;
         let moveZ = 0;

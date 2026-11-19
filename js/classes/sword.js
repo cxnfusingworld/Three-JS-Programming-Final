@@ -2,10 +2,17 @@
 
 import * as THREE from 'three';
 import { State } from '../core/state.js';
+import { Player } from './player.js';
+import { InputHandler } from '../core/utils.js';
 
 //~ Public API
 
 export class Sword {
+    /**
+     * @param {THREE.scene} scene 
+     * @param {Player} player 
+     * @param {InputHandler} input 
+     */
     constructor(scene, player, input) {
         this.scene = scene;
         this.player = player;
@@ -31,6 +38,9 @@ export class Sword {
         scene.add(this.mesh);
     }
 
+    /**
+     * @param {number} dt
+     */
     update(dt) {
         this.mesh.position.copy(this.player.mesh.position);
         

@@ -7,6 +7,9 @@ import { State } from '../core/state.js';
 //~ Public API
 
 export class World {
+    /**
+     * @param {THREE.scene} scene 
+     */
     constructor(scene) {
         this.scene = scene;
 

@@ -5,6 +5,11 @@ import * as THREE from 'three';
 //~ Public API
 
 export class Spike {
+    /**
+     * @param {THREE.scene} scene 
+     * @param {number} z 
+     * @param {number} x 
+     */
     constructor(scene, x, z) {
         const geometry = new THREE.ConeGeometry(0.5, 1.5, 20);
         const material = new THREE.MeshStandardMaterial({ 
@@ -20,6 +25,9 @@ export class Spike {
         scene.add(this.mesh);
     }
 
+    /**
+     * @param {THREE.Mesh} playerMesh
+     */
     checkCollision(playerMesh) {
         const distance = this.mesh.position.distanceTo(playerMesh.position);
         return distance < 1.0;
