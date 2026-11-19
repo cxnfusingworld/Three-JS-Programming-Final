@@ -6,10 +6,11 @@ import { Sword } from './sword.js'
 
 import { Config } from '../core/config.js'
 import { State } from '../core/state.js';
-import { sendData } from '../core/net.js';
+import { getClientId, sendData } from '../core/net.js';
 import { InputHandler } from '../core/utils.js';
 
 import { Dash } from '../abilities/dash.js';
+import { Enum } from '../core/enums.js';
 
 //~ Constants
 
@@ -115,8 +116,10 @@ export class Player {
 
         this.sword.update(dt);
 
-        sendData({
-            type: 'player-update',
+        sendData("PLAYER_UPDATE", {
+            type: Enum.SyncType.PlayerUpdate,
+            id: getClientId(),
+            
             x: this.mesh.position.x,
             y: this.mesh.position.y,
             z: this.mesh.position.z,

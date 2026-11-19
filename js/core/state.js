@@ -4,6 +4,7 @@ import * as THREE from "three"
 import { World } from "../classes/world.js"
 import { Player } from "../classes/player.js"
 import { data } from "./data.js"
+import { CooldownManager } from "./utils.js"
 
 //~ Types
 
@@ -14,6 +15,7 @@ import { data } from "./data.js"
  * @property {THREE.PerspectiveCamera} Camera
  * @property {Player} Player
  * @property {data} Data
+ * @property {CooldownManager} CooldownManager
  */
 
 //~ Public API

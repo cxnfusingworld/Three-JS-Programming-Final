@@ -61,9 +61,9 @@ export class InputHandler {
     }
 
     /**
-     * @template K
-     * @param {(input: MouseEvent) => (any)} callback 
-     * @param {K & string} name 
+     * @template {string} K
+     * @param {(input: MouseEvent) => (void)} callback 
+     * @param {K} name 
      * @returns {K}
      */
     mouseMoved(callback, name) {
@@ -72,9 +72,9 @@ export class InputHandler {
     }
 
     /**
-     * @template K
-     * @param {(input: KeyboardEvent) => (any)} callback 
-     * @param {K & string} name 
+     * @template {string} K
+     * @param {(input: KeyboardEvent) => (void)} callback 
+     * @param {K} name 
      * @returns {K}
      */
     onKeyDown(callback, name) {
@@ -83,14 +83,43 @@ export class InputHandler {
     }
 
     /**
-     * @template K
-     * @param {(input: KeyboardEvent) => (any)} callback 
-     * @param {K & string} name 
+     * @template {string} K
+     * @param {(input: KeyboardEvent) => (void)} callback 
+     * @param {K} name 
      * @returns {K}
      */
     onKeyUp(callback, name) {
         this.keyUpCallbacks[name] = callback;
         return name;
+    }
+}
+
+export class CooldownManager {
+    /**
+     * @param {THREE.Clock} clock 
+     */
+    constructor(clock) {
+        this.clock = clock;
+        
+        this.cooldownHistory = {};
+    }
+
+    /**
+     * @param {string} name 
+     * @param {number} duration 
+     */
+    setCooldown(name, duration) {
+        this.cooldownHistory[name] = this.clock.getElapsedTime() + duration;
+    }
+
+    /**s
+     * @param {string} name 
+     * @returns {boolean}
+     */
+    onCooldown(name) {
+        let cooldownEnd = this.cooldownHistory[name];
+        if (!cooldownEnd) return false;
+        return this.clock.getElapsedTime() < cooldownEnd;
     }
 }
 

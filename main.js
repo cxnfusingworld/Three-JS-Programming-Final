@@ -6,7 +6,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-import { InputHandler } from './js/core/utils.js';
+import { CooldownManager, InputHandler } from './js/core/utils.js';
 import { State } from './js/core/state.js';
 import { data } from './js/core/data.js';
 
@@ -31,6 +31,7 @@ const camera = new THREE.OrthographicCamera(-Config.VIEW_SIZE * aspectRatio, Con
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 const input = new InputHandler(clock);
+const cooldownManager = new CooldownManager(clock)
 const world = new World(scene, camera);
 const player = new Player(scene, input, camera, world.floor);
 
@@ -62,6 +63,7 @@ State.World = world;
 State.Camera = camera;
 State.Player = player;
 State.Data = data;
+State.CooldownManager = cooldownManager;
 
 scene.background = new THREE.Color(0x1e222a);
 
