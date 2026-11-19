@@ -38,10 +38,7 @@ export class Sword {
         scene.add(this.mesh);
     }
 
-    /**
-     * @param {number} dt
-     */
-    update(dt) {
+    update() {
         this.mesh.position.copy(this.player.mesh.position);
         
         let lastMouseInput = this.input.lastMouseInput;

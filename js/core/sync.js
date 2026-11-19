@@ -41,13 +41,12 @@ export function syncMesh(meshId) {
 //~ Main
 
 onPlayerAdded(syncPlayerMesh);
-onDataRecieved("PLAYER_UPDATE", function (data) {
+onDataRecieved(Enum.SyncType.PlayerUpdate, function (data) {
     let playerData = PlayerMeshes[data.id];
-    if (!playerData) return;
+    if (!playerData || !playerData.Mesh) return;
 
     if (!playerData.MeshAdded && State.World) {
-        const targetScene = State.World.scene || State.World;
-        targetScene.add(playerData.Mesh);
+        State.World.scene.add(playerData.Mesh);
         playerData.MeshAdded = true;
     }
 

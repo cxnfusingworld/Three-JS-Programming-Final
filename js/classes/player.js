@@ -116,8 +116,7 @@ export class Player {
 
         this.sword.update(dt);
 
-        sendData("PLAYER_UPDATE", {
-            type: Enum.SyncType.PlayerUpdate,
+        sendData(Enum.SyncType.PlayerUpdate, {
             id: getClientId(),
             
             x: this.mesh.position.x,
