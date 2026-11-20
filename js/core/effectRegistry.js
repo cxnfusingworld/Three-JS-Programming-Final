@@ -1,12 +1,12 @@
 //~ Imports
 
-import { Explosion } from "../effects/explosion";
+import { Explosion } from "../effects/explosion.js";
 
 //~ Types
 
 /**
  * @typedef {{
- *  Explosion: import("../effects/explosion").ExplosionData,
+ *  Explosion: import("../effects/explosion.js").ExplosionData,
  * }} EffectPayloadMap
  */
 
