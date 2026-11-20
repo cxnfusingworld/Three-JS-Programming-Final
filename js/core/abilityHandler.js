@@ -1,7 +1,6 @@
 //~ Imports
 
 import { Enum } from "./enums.js";
-import { State } from "./state.js";
 
 import { Dash } from "../abilities/dash.js";
 import { GroundPound } from "../abilities/ground_pound.js";

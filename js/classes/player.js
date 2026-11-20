@@ -10,8 +10,6 @@ import { getClientId, sendData } from '../core/net.js';
 import { InputHandler } from '../core/utils.js';
 import { Enum } from '../core/enums.js';
 
-import { Dash } from '../abilities/dash.js';
-import { GroundPound } from '../abilities/ground_pound.js';
 import { AbilityHandler } from '../core/abilityHandler.js';
 
 //~ Constants

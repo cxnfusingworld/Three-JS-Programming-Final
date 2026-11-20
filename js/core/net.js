@@ -56,7 +56,7 @@ import { Enum } from './enums.js';
  *  PLAYER_UPDATE: SyncType_PlayerUpdate,
  *  PLAYER_ADDED: SyncType_PlayerAdded,
  *  INVOKE_OTHERS: SyncType_InvokeOtherPlayers,
- *  SPAWN_EFFECT: SyncType_SpawnEffect
+ *  SPAWN_EFFECT: SyncType_SpawnEffect,
  *  DAMAGE: SyncType_Damage
  * }} SyncTypeData
  */

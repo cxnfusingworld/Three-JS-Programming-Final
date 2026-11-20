@@ -1,7 +1,7 @@
 //~ Imports
 
 import * as THREE from 'three';
-import { onDataRecieved, onDataSending, onPlayerAdded, onPlayerRemoved, sendData } from './net.js';
+import { onDataRecieved, onDataSending, onPlayerAdded, onPlayerRemoved } from './net.js';
 import { State } from './state.js';
 import { Enum } from './enums.js';
 import { EffectRegistry } from './effectRegistry.js';

@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { State } from '../core/state.js';
 
-//~ Public Methods
+//~ Types
 
 /**
  * @typedef {{
@@ -13,6 +13,8 @@ import { State } from '../core/state.js';
  *  radius: number
  * }} ExplosionData
  */
+
+//~ Public Methods
 
 /**
  * @param {ExplosionData} data
