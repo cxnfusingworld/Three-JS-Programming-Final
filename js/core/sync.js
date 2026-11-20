@@ -79,3 +79,8 @@ onDataSending(Enum.SyncType.SpawnEffect, (data) => {
     if (!effect) return;
     effect(data.data);
 })
+
+onDataRecieved(Enum.SyncType.Damage, (data) => {
+    if (!State.Player || !data.damage) return;
+    State.Player.health -= data.damage;
+})
