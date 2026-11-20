@@ -5,33 +5,33 @@ import { Enum } from './enums.js';
 
 //~ Types
 
- /**
-  * @typedef {Object} SyncType_PlayerUpdate
-  * @property {Enum["SyncType"]["PlayerUpdate"]} type
-  * @property {string} id
-  * @property {number} x
-  * @property {number} y
-  * @property {number} z
-  * @property {number} rotation
-  */
+/**
+ * @typedef {Object} SyncType_PlayerUpdate
+ * @property {Enum["SyncType"]["PlayerUpdate"]} type
+ * @property {string} id
+ * @property {number} x
+ * @property {number} y
+ * @property {number} z
+ * @property {number} rotation
+ */
 
 /**
   * @typedef {Object} SyncType_PlayerAdded
   * @property {Enum["SyncType"]["PlayerAdded"]} type
   * @property {string} id
   */
- 
+
 /**
   * @typedef {Object} SyncType_InvokeOtherPlayers
   * @property {Enum["SyncType"]["InvokeOtherPlayers"]} type
   */
- 
- /**
-  * @typedef {Object} SyncTypeData
-  * @property {SyncType_PlayerUpdate} PLAYER_UPDATE
-  * @property {SyncType_PlayerAdded} PLAYER_ADDED
-  * @property {SyncType_InvokeOtherPlayers} INVOKE_OTHERS
-  */
+
+/**
+ * @typedef {Object} SyncTypeData
+ * @property {SyncType_PlayerUpdate} PLAYER_UPDATE
+ * @property {SyncType_PlayerAdded} PLAYER_ADDED
+ * @property {SyncType_InvokeOtherPlayers} INVOKE_OTHERS
+ */
 
 //~ Constants
 
@@ -39,6 +39,7 @@ const peer = new Peer();
 
 const dataRecievedCallbacks = {};
 const playerAddedCallbacks = {};
+const playerRemovedCallbacks = {};
 
 const connectedPeers = {}
 
@@ -52,43 +53,75 @@ let clientId = null;
 //~ Helper Functions
 
 function initPlayer(conn) {
-    if (connectedPeers[conn.peer]) return;
-    
+    if (connectedPeers[conn.peer] === conn) return;
+    if (connectedPeers[conn.peer]) connectedPeers[conn.peer].close();
+
     console.log(`Initializing other player with id ${conn.peer}.`);
 
     connectedPeers[conn.peer] = conn;
-    
+
     Object.keys(playerAddedCallbacks).forEach(key => {
         playerAddedCallbacks[key](conn.peer);
     });
 
-    conn.on('data', (data) => {
-        if (data.type == Enum.SyncType.PlayerAdded) {            
-            let conn = peer.connect(data.id)
+    let handleDisconnect = () => {
+        if (connectedPeers[conn.peer] === conn) {
+            console.log(`Player disconnected: ${conn.peer}`);
+            delete connectedPeers[conn.peer];
 
-            conn.on('open', () => {
-                initPlayer(conn);
+            Object.keys(playerRemovedCallbacks).forEach(key => {
+                playerRemovedCallbacks[key](conn.peer);
             });
-
-            return;
         }
+    };
 
-        if (data.type == Enum.SyncType.InvokeOtherPlayers) {
-            Object.keys(connectedPeers).forEach(id => {
-                if (id == conn.peer) return;
-                console.log(`Sending other peer id to ${conn.peer}, with id ${id}.`)
-                sendData(Enum.SyncType.PlayerAdded, { id: id }, conn);
+    let initConnections = () => {
+        conn.on('data', (data) => {
+            if (data.type == Enum.SyncType.PlayerAdded) {
+                if (data.id === clientId || connectedPeers[data.id]) return;
+
+                if (clientId < data.id) {
+                    let newConn = peer.connect(data.id);
+                    newConn.on('open', () => {
+                        initPlayer(newConn);
+                    });
+                }
+
+                let conn = peer.connect(data.id)
+
+                conn.on('open', () => {
+                    initPlayer(conn);
+                });
+
+                return;
+            }
+
+            if (data.type == Enum.SyncType.InvokeOtherPlayers) {
+                Object.keys(connectedPeers).forEach(id => {
+                    if (id == conn.peer) return;
+                    console.log(`Sending other peer id to ${conn.peer}, with id ${id}.`)
+                    sendData(Enum.SyncType.PlayerAdded, { id: id }, conn);
+                });
+
+                return;
+            }
+
+            Object.keys(dataRecievedCallbacks).forEach(key => {
+                dataRecievedCallbacks[key](data);
             });
-
-            return;
-        }
-
-        Object.keys(dataRecievedCallbacks).forEach(key => {
-            dataRecievedCallbacks[key](data);
         });
-    });
 
-    sendData(Enum.SyncType.InvokeOtherPlayers, {}, conn);
+        conn.on('close', handleDisconnect);
+        conn.on('error', handleDisconnect);
+        
+        sendData(Enum.SyncType.InvokeOtherPlayers, {}, conn);
+    };
+
+    if (conn.open) {
+        initConnections();
+    } else {
+        conn.on('open', () => initConnections());
+    }
 }
 
 //~ Main
@@ -117,7 +150,7 @@ document.getElementById('connect-btn').addEventListener('click', () => {
     conn.on('open', () => {
         console.log('Successfully connected to the host!')
         alert('Connected successfully!');
-        
+
         initPlayer(conn);
     });
 });
@@ -139,7 +172,7 @@ export function sendData(type, data, conn) {
             let conn = connectedPeers[id]
             conn.send(data);
         });
-    }    
+    }
 }
 
 /**
@@ -150,6 +183,17 @@ export function sendData(type, data, conn) {
  */
 export function onPlayerAdded(callback, name) {
     playerAddedCallbacks[name] = callback;
+    return name;
+}
+
+/**
+ * @template {string} K
+ * @param {(id: string) => (void)} callback 
+ * @param {K} name 
+ * @returns {K}
+ */
+export function onPlayerRemoved(callback, name) {
+    playerRemovedCallbacks[name] = callback;
     return name;
 }
 

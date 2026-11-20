@@ -1,13 +1,13 @@
 //~ Imports
 
 import * as THREE from 'three';
-import { onDataRecieved, onPlayerAdded } from './net.js';
+import { onDataRecieved, onPlayerAdded, onPlayerRemoved } from './net.js';
 import { State } from './state.js';
 import { Enum } from './enums.js';
 
 //~ Constants
 
-const PlayerMeshes = {}
+const LoadedPlayers = {}
 
 const PlayerGeometry = new THREE.CapsuleGeometry(0.5, 1, 10, 20);
 const PlayerMaterial = new THREE.MeshStandardMaterial({
@@ -23,7 +23,7 @@ const PlayerMaterial = new THREE.MeshStandardMaterial({
  */
 function syncPlayerMesh(id) {
     let playerMesh = new THREE.Mesh(PlayerGeometry, PlayerMaterial);
-    PlayerMeshes[id] = {
+    LoadedPlayers[id] = {
         Mesh: playerMesh,
         MeshAdded: false,
     };
@@ -41,8 +41,15 @@ export function syncMesh(meshId) {
 //~ Main
 
 onPlayerAdded(syncPlayerMesh);
-onDataRecieved(Enum.SyncType.PlayerUpdate, function (data) {
-    let playerData = PlayerMeshes[data.id];
+onPlayerRemoved((id) => {
+    if (LoadedPlayers[id]) {
+        State.World.scene.remove(LoadedPlayers[id].Mesh);
+        delete LoadedPlayers[id];
+        console.log(`Removed mesh for player: ${id}`);
+    }
+}, "REMOVE_PLAYER_SYNC");
+onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
+    let playerData = LoadedPlayers[data.id];
     if (!playerData || !playerData.Mesh) return;
 
     if (!playerData.MeshAdded && State.World) {
