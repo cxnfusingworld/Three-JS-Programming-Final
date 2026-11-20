@@ -8,9 +8,11 @@ import { Config } from '../core/config.js'
 import { State } from '../core/state.js';
 import { getClientId, sendData } from '../core/net.js';
 import { InputHandler } from '../core/utils.js';
+import { Enum } from '../core/enums.js';
 
 import { Dash } from '../abilities/dash.js';
-import { Enum } from '../core/enums.js';
+import { GroundPound } from '../abilities/ground_pound.js';
+import { AbilityHandler } from '../core/abilityHandler.js';
 
 //~ Constants
 
@@ -50,9 +52,9 @@ export class Player {
         this.mesh.castShadow = true;
         scene.add(this.mesh);
 
-        input.onKeyDown(function(input) {            
-            if (input.code !== "KeyQ") return;
-            Dash.activate()
+        input.onKeyDown(function(input) {
+            if (input.code === "KeyQ") AbilityHandler.useAbility("Dash");
+            if (input.code === "KeyE") AbilityHandler.useAbility("GroundPound");
         })
     }
 

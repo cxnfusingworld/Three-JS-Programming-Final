@@ -11,8 +11,8 @@ const PlayerMeshes = {}
 
 const PlayerGeometry = new THREE.CapsuleGeometry(0.5, 1, 10, 20);
 const PlayerMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color().setRGB(1, 0.4, 4),
-    emissive: new THREE.Color().setRGB(1, 0.4, 4),
+    color: new THREE.Color().setRGB(1, 0.55, 0.2),
+    emissive: new THREE.Color().setRGB(1, 0.55, 0.2),
     emissiveIntensity: 4,
 });
 

@@ -9,11 +9,11 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { CooldownManager, InputHandler } from './js/core/utils.js';
 import { State } from './js/core/state.js';
 import { data } from './js/core/data.js';
+import { Config } from './js/core/config.js';
+import { AbilityHandler } from './js/core/abilityHandler.js';
 
 import { World } from './js/classes/world.js';
 import { Player } from './js/classes/player.js';
-
-import { Config } from './js/core/config.js';
 
 import './js/core/net.js';
 import './js/core/sync.js';
@@ -47,6 +47,8 @@ function animate() {
     let dt = clock.getDelta();
     dt = Math.min(dt, 0.1);
 
+    AbilityHandler.update(dt);
+
     player.update(dt);
     world.update(dt);
     
@@ -65,7 +67,7 @@ State.Player = player;
 State.Data = data;
 State.CooldownManager = cooldownManager;
 
-scene.background = new THREE.Color(0x1e222a);
+scene.background = new THREE.Color().setRGB(0.02, 0.02, 0.05);
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;

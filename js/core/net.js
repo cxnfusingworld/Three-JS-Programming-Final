@@ -7,7 +7,7 @@ import { Enum } from './enums.js';
 
  /**
   * @typedef {Object} SyncType_PlayerUpdate
-  * @property {"PLAYER_UPDATE"} type
+  * @property {Enum["SyncType"]["PlayerUpdate"]} type
   * @property {string} id
   * @property {number} x
   * @property {number} y
@@ -17,13 +17,13 @@ import { Enum } from './enums.js';
 
 /**
   * @typedef {Object} SyncType_PlayerAdded
-  * @property {"PLAYER_ADDED"} type
+  * @property {Enum["SyncType"]["PlayerAdded"]} type
   * @property {string} id
   */
  
 /**
   * @typedef {Object} SyncType_InvokeOtherPlayers
-  * @property {"INVOKE_OTHERS"} type
+  * @property {Enum["SyncType"]["InvokeOtherPlayers"]} type
   */
  
  /**
@@ -115,7 +115,7 @@ document.getElementById('connect-btn').addEventListener('click', () => {
 
     let conn = peer.connect(friendId);
     conn.on('open', () => {
-        console.log('Successfully connected to the host!');
+        console.log('Successfully connected to the host!')
         alert('Connected successfully!');
         
         initPlayer(conn);

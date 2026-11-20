@@ -6,4 +6,9 @@ export const Enum = Object.freeze({
         "PlayerAdded": "PLAYER_ADDED",
         "InvokeOtherPlayers": "INVOKE_OTHERS",
     }),
+
+    Ability: Object.freeze({
+        "Dash": "Dash",
+        "GroundPound": "GroundPound",
+    }),
 });
