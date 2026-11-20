@@ -37,6 +37,7 @@ export class Player {
         this.acceleration = Config.WALK_ACCELERATION;
         this.jumpForce = Config.JUMP_FORCE;
 
+        this.health = 100;
         this.velocity = new THREE.Vector3(0, 0, 0);
         this.isGrounded = true;
 

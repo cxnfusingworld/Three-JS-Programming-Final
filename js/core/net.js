@@ -16,7 +16,8 @@ import { Enum } from './enums.js';
  *  x: number,
  *  y: number,
  *  z: number,
- *  rotation: number
+ *  rotation: number,
+ *  health: number?,
  * }} SyncType_PlayerUpdate
  */
 
@@ -45,10 +46,18 @@ import { Enum } from './enums.js';
 
 /**
  * @typedef {{
+ *  type: Enum["SyncType"]["Damage"],
+ *  damage: number,
+ * }} SyncType_Damage
+ */
+
+/**
+ * @typedef {{
  *  PLAYER_UPDATE: SyncType_PlayerUpdate,
  *  PLAYER_ADDED: SyncType_PlayerAdded,
  *  INVOKE_OTHERS: SyncType_InvokeOtherPlayers,
  *  SPAWN_EFFECT: SyncType_SpawnEffect
+ *  DAMAGE: SyncType_Damage
  * }} SyncTypeData
  */
 

@@ -43,7 +43,7 @@ export class GroundPoundAbility {
                     x: player.mesh.position.x,
                     y: player.mesh.position.y,
                     z: player.mesh.position.z,
-                    radius: 10,
+                    radius: 7,
                 }
             });
 
