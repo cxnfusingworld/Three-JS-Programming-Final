@@ -5,32 +5,51 @@ import { Enum } from './enums.js';
 
 //~ Types
 
+/** 
+  * @typedef {import('../core/effectRegistry.js').EffectPayloadMap} EffectPayloadMap 
+  */
+
 /**
- * @typedef {Object} SyncType_PlayerUpdate
- * @property {Enum["SyncType"]["PlayerUpdate"]} type
- * @property {string} id
- * @property {number} x
- * @property {number} y
- * @property {number} z
- * @property {number} rotation
+ * @typedef {{
+ *  type: Enum["SyncType"]["PlayerUpdate"],
+ *  id: string,
+ *  x: number,
+ *  y: number,
+ *  z: number,
+ *  rotation: number
+ * }} SyncType_PlayerUpdate
  */
 
 /**
-  * @typedef {Object} SyncType_PlayerAdded
-  * @property {Enum["SyncType"]["PlayerAdded"]} type
-  * @property {string} id
-  */
+ * @typedef {{
+ *  type: Enum["SyncType"]["PlayerAdded"],
+ *  id: string,
+ * }} SyncType_PlayerAdded
+ */
 
 /**
-  * @typedef {Object} SyncType_InvokeOtherPlayers
-  * @property {Enum["SyncType"]["InvokeOtherPlayers"]} type
-  */
+ * @typedef {{
+ *  type: Enum["SyncType"]["InvokeOtherPlayers"],
+ * }} SyncType_InvokeOtherPlayers
+ */
 
 /**
- * @typedef {Object} SyncTypeData
- * @property {SyncType_PlayerUpdate} PLAYER_UPDATE
- * @property {SyncType_PlayerAdded} PLAYER_ADDED
- * @property {SyncType_InvokeOtherPlayers} INVOKE_OTHERS
+ * @typedef {{
+ *   [K in keyof EffectPayloadMap]: {
+ *     type: Enum["SyncType"]["SpawnEffect"],
+ *     effectName: K,
+ *     data: EffectPayloadMap[K]
+ *   }
+ * }[keyof EffectPayloadMap]} SyncType_SpawnEffect
+ */
+
+/**
+ * @typedef {{
+ *  PLAYER_UPDATE: SyncType_PlayerUpdate,
+ *  PLAYER_ADDED: SyncType_PlayerAdded,
+ *  INVOKE_OTHERS: SyncType_InvokeOtherPlayers,
+ *  SPAWN_EFFECT: SyncType_SpawnEffect
+ * }} SyncTypeData
  */
 
 //~ Constants
@@ -38,6 +57,7 @@ import { Enum } from './enums.js';
 const peer = new Peer();
 
 const dataRecievedCallbacks = {};
+const dataSendingCallbacks = {};
 const playerAddedCallbacks = {};
 const playerRemovedCallbacks = {};
 
@@ -113,7 +133,7 @@ function initPlayer(conn) {
 
         conn.on('close', handleDisconnect);
         conn.on('error', handleDisconnect);
-        
+
         sendData(Enum.SyncType.InvokeOtherPlayers, {}, conn);
     };
 
@@ -166,13 +186,18 @@ document.getElementById('connect-btn').addEventListener('click', () => {
  */
 export function sendData(type, data, conn) {
     data.type = type;
+
+    Object.keys(dataSendingCallbacks).forEach(key => {
+        dataSendingCallbacks[key](data);
+    });
+
     if (conn) conn.send(data);
     else {
         Object.keys(connectedPeers).forEach(id => {
-            let conn = connectedPeers[id]
-            conn.send(data);
+            let peerConn = connectedPeers[id];
+            peerConn.send(data);
         });
-    }
+    }    
 }
 
 /**
@@ -207,6 +232,23 @@ export function onPlayerRemoved(callback, name) {
  */
 export function onDataRecieved(type, callback, name) {
     dataRecievedCallbacks[name] = (data) => {
+        if (data && data.type === type) {
+            callback(data);
+        }
+    };
+    return name;
+}
+
+/**
+ * @template {keyof SyncTypeData} T
+ * @template {string} K
+ * @param {T} type
+ * @param {(data: SyncTypeData[T]) => (void)} callback 
+ * @param {K} name 
+ * @returns {K}
+ */
+export function onDataSending(type, callback, name) {
+    dataSendingCallbacks[name] = (data) => {
         if (data && data.type === type) {
             callback(data);
         }

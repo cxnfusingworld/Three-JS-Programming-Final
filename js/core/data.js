@@ -1,10 +1,11 @@
 //~ Types
 
 /**
- * @typedef {Object} GameData
- * @property {number} Coins
- * @property {string} PlayerName
- * @property {number} Level
+ * @typedef {{
+ *  PlayerName: string,
+ *  Coins: number,
+ *  Level: number,
+ * }} GameData
  */
 
 //~ Constants
@@ -17,7 +18,7 @@ const TemplateData = {
 
 //~ Public API
 
-export class DataManager {
+class DataManagerCreator {
     constructor() {}
 
     /**
@@ -39,4 +40,4 @@ export class DataManager {
     }
 }
 
-export const data = new DataManager();
+export const DataManager = new DataManagerCreator();

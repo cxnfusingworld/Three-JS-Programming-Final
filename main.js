@@ -8,7 +8,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import { CooldownManager, InputHandler } from './js/core/utils.js';
 import { State } from './js/core/state.js';
-import { data } from './js/core/data.js';
+import { DataManager } from './js/core/data.js';
 import { Config } from './js/core/config.js';
 import { AbilityHandler } from './js/core/abilityHandler.js';
 
@@ -64,7 +64,7 @@ State.Scene = scene;
 State.World = world;
 State.Camera = camera;
 State.Player = player;
-State.Data = data;
+State.DataManager = DataManager;
 State.CooldownManager = cooldownManager;
 
 scene.background = new THREE.Color().setRGB(0.02, 0.02, 0.05);

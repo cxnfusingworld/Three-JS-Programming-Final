@@ -9,9 +9,10 @@ import { GroundPound } from "../abilities/ground_pound.js";
 //~ Types
 
 /**
- * @typedef {Object} Ability
- * @param {() => (boolean)} activate
- * @param {(dt: number) => (boolean)} update
+ * @typedef {{
+ *  activate: () => (boolean),
+ *  update: (dt: number) => (boolean)
+ * }} Ability
  */
 
 //~ Constants
@@ -24,7 +25,7 @@ const AbilityRegistry = {
 
 //~ Public API
 
-export class AbilityHandlerCreator {
+class AbilityHandlerCreator {
     constructor() {}
 
     /**

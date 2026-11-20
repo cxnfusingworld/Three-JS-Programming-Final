@@ -2,6 +2,8 @@
 
 import * as THREE from 'three';
 import { State } from "../core/state.js";
+import { sendData } from '../core/net.js';
+import { Enum } from '../core/enums.js';
 
 //~ Public API
 
@@ -35,6 +37,16 @@ export class GroundPoundAbility {
         let player = State.Player;
         if (!player || !this.isSlamming) return false;
         if (player.isGrounded || player.mesh.position.y <= 1) {
+            sendData(Enum.SyncType.SpawnEffect, {
+                effectName: "Explosion",
+                data: {
+                    x: player.mesh.position.x,
+                    y: player.mesh.position.y,
+                    z: player.mesh.position.z,
+                    radius: 10,
+                }
+            });
+
             player.velocity.y = 8 * Math.sqrt(this.originalHeight); 
             player.isGrounded = false;
 

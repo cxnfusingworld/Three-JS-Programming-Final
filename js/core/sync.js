@@ -1,9 +1,10 @@
 //~ Imports
 
 import * as THREE from 'three';
-import { onDataRecieved, onPlayerAdded, onPlayerRemoved } from './net.js';
+import { onDataRecieved, onDataSending, onPlayerAdded, onPlayerRemoved, sendData } from './net.js';
 import { State } from './state.js';
 import { Enum } from './enums.js';
+import { EffectRegistry } from './effectRegistry.js';
 
 //~ Constants
 
@@ -23,10 +24,20 @@ const PlayerMaterial = new THREE.MeshStandardMaterial({
  */
 function syncPlayerMesh(id) {
     let playerMesh = new THREE.Mesh(PlayerGeometry, PlayerMaterial);
+    playerMesh.castShadow = true;
+
     LoadedPlayers[id] = {
         Mesh: playerMesh,
         MeshAdded: false,
     };
+}
+
+function removePlayerMesh(id) {
+    if (LoadedPlayers[id]) {
+        State.World.scene.remove(LoadedPlayers[id].Mesh);
+        delete LoadedPlayers[id];
+        console.log(`Removed mesh for player: ${id}`);
+    }
 }
 
 //~ Public API
@@ -40,14 +51,9 @@ export function syncMesh(meshId) {
 
 //~ Main
 
-onPlayerAdded(syncPlayerMesh);
-onPlayerRemoved((id) => {
-    if (LoadedPlayers[id]) {
-        State.World.scene.remove(LoadedPlayers[id].Mesh);
-        delete LoadedPlayers[id];
-        console.log(`Removed mesh for player: ${id}`);
-    }
-}, "REMOVE_PLAYER_SYNC");
+onPlayerAdded(syncPlayerMesh, "ADD_PLAYER_SYNC");
+onPlayerRemoved(removePlayerMesh, "REMOVE_PLAYER_SYNC");
+
 onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
     let playerData = LoadedPlayers[data.id];
     if (!playerData || !playerData.Mesh) return;
@@ -62,3 +68,14 @@ onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
     playerData.Mesh.position.z = data.z;
     playerData.Mesh.rotation.y = data.rotation;
 }, "PLAYER_SYNC");
+
+onDataRecieved(Enum.SyncType.SpawnEffect, (data) => {
+    let effect = EffectRegistry.effects[data.effectName];
+    if (!effect) return;
+    effect(data.data);
+})
+onDataSending(Enum.SyncType.SpawnEffect, (data) => {
+    let effect = EffectRegistry.effects[data.effectName];
+    if (!effect) return;
+    effect(data.data);
+})
