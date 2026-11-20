@@ -20,6 +20,8 @@ import { State } from '../core/state.js';
  * @param {ExplosionData} data
  */
 export function Explosion(data) {
+    console.log("BOOM");
+    
     const geometry = new THREE.SphereGeometry(1, 16, 16);
     const material = new THREE.MeshStandardMaterial({
         color: 0xff5500,

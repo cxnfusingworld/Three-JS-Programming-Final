@@ -135,6 +135,7 @@ function initPlayer(conn) {
                 return;
             }
 
+            console.log(dataRecievedCallbacks)
             Object.keys(dataRecievedCallbacks).forEach(key => {
                 dataRecievedCallbacks[key](data);
             });

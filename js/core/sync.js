@@ -29,15 +29,31 @@ function syncPlayerMesh(id) {
     LoadedPlayers[id] = {
         Mesh: playerMesh,
         MeshAdded: false,
-    };
+    }
 }
 
+/**
+ * @param {string} id 
+ */
 function removePlayerMesh(id) {
     if (LoadedPlayers[id]) {
         State.World.scene.remove(LoadedPlayers[id].Mesh);
         delete LoadedPlayers[id];
         console.log(`Removed mesh for player: ${id}`);
     }
+}
+
+/**
+ * @param {import('./net.js').SyncType_SpawnEffect} data 
+ * @returns {void}
+ */
+function spawnEffect(data) {
+    let effect = EffectRegistry.effects[data.effectName];
+    if (!effect) {
+        console.log(`No effect with name ${data.effectName} exists.`); 
+        return;
+    }
+    effect(data.data);
 }
 
 //~ Public API
@@ -69,18 +85,10 @@ onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
     playerData.Mesh.rotation.y = data.rotation;
 }, "PLAYER_SYNC");
 
-onDataRecieved(Enum.SyncType.SpawnEffect, (data) => {
-    let effect = EffectRegistry.effects[data.effectName];
-    if (!effect) return;
-    effect(data.data);
-})
-onDataSending(Enum.SyncType.SpawnEffect, (data) => {
-    let effect = EffectRegistry.effects[data.effectName];
-    if (!effect) return;
-    effect(data.data);
-})
+onDataRecieved(Enum.SyncType.SpawnEffect, spawnEffect, "SPAWN_EFFECT_SYNC");
+onDataSending(Enum.SyncType.SpawnEffect, spawnEffect, "SPAWN_EFFECT_SYNC");
 
 onDataRecieved(Enum.SyncType.Damage, (data) => {
     if (!State.Player || !data.damage) return;
     State.Player.health -= data.damage;
-})
+}, "DAMAGE_SYNC");
