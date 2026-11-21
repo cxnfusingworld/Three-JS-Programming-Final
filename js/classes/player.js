@@ -94,7 +94,7 @@ export class Player {
         this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, targetZ, this.acceleration * dt);
 
         if (this.input.wasKeyDown('Space', Config.JUMP_BUFFER) && this.isGrounded) {
-            this.velocity.y = this.jumpForce;
+            this.velocity.y = this.jumpForce + Math.max(0, this.velocity.y)
             this.isGrounded = false;
         }
 

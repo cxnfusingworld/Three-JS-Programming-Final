@@ -38,12 +38,34 @@ export class GroundPoundAbility {
         if (!player || !this.isSlamming) return false;
         if (player.isGrounded || player.mesh.position.y <= 1) {
             sendData(Enum.SyncType.SpawnEffect, {
+                effectName: "Shockwave",
+                data: {
+                    x: player.mesh.position.x,
+                    y: player.mesh.position.y - 1,
+                    z: player.mesh.position.z,
+                    innerRadius: 7,
+                    outerRadius: 8,
+
+                    color: new THREE.Color().setRGB(1, 1, 1),
+                    startOpacity: 0.05,
+                    emissiveIntensity: 10,
+
+                    duration: 1000,
+                }
+            });
+            sendData(Enum.SyncType.SpawnEffect, {
                 effectName: "Explosion",
                 data: {
                     x: player.mesh.position.x,
-                    y: player.mesh.position.y,
+                    y: player.mesh.position.y - 1,
                     z: player.mesh.position.z,
-                    radius: 7,
+                    radius: 1.5,
+
+                    color: new THREE.Color().setRGB(1, 1, 1),
+                    startOpacity: 0.1,
+                    emissiveIntensity: 5,
+
+                    duration: 300,
                 }
             });
 

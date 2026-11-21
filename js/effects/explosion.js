@@ -10,7 +10,11 @@ import { State } from '../core/state.js';
  *  x: number,
  *  y: number,
  *  z: number,
- *  radius: number
+ *  radius: number,
+ *  color: [THREE.Color],
+ *  emissiveIntensity: [number],
+ *  startOpacity: [number],
+ *  duration: [number],
  * }} ExplosionData
  */
 
@@ -20,36 +24,35 @@ import { State } from '../core/state.js';
  * @param {ExplosionData} data
  */
 export function Explosion(data) {
-    console.log("BOOM");
-    
-    const geometry = new THREE.SphereGeometry(1, 16, 16);
-    const material = new THREE.MeshStandardMaterial({
-        color: 0xff5500,
+    let geometry = new THREE.SphereGeometry(1, 16, 16);
+    let material = new THREE.MeshStandardMaterial({
+        color: data.color || 0xff5500,
         transparent: true,
-        opacity: 0.8,
-        emissive: 0xff5500,
-        emissiveIntensity: 6,
+        opacity: data.startOpacity || 0.8,
+        emissive: data.color || 0xff5500,
+        emissiveIntensity: data.emissiveIntensity || 6,
+        depthWrite: false,
     });
 
-    const explosionMesh = new THREE.Mesh(geometry, material);
+    let explosionMesh = new THREE.Mesh(geometry, material);
     explosionMesh.position.set(data.x, data.y, data.z);
     
     State.World.scene.add(explosionMesh);
 
-    const startTime = performance.now();
-    const duration = 400;
+    let startTime = performance.now();
+    let duration = data.duration || 400;
 
-    const animateExplosion = (currentTime) => {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1.0);
+    let update = (currentTime) => {
+        let elapsed = currentTime - startTime;
+        let progress = Math.min(elapsed / duration, 1.0);
 
-        const currentScale = data.radius * progress;
+        let currentScale = data.radius * progress;
         explosionMesh.scale.set(currentScale, currentScale, currentScale);
 
-        material.opacity = 0.8 * (1.0 - progress);
+        material.opacity = (data.startOpacity || 0.8) * (1.0 - progress);
 
         if (progress < 1.0) {
-            requestAnimationFrame(animateExplosion);
+            requestAnimationFrame(update);
         } else {
             State.World.scene.remove(explosionMesh);
             geometry.dispose();
@@ -57,5 +60,5 @@ export function Explosion(data) {
         }
     };
 
-    requestAnimationFrame(animateExplosion);
+    requestAnimationFrame(update);
 }
