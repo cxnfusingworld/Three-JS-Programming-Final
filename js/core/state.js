@@ -14,6 +14,7 @@ import { CooldownManager } from "./utils.js"
  *  World: World,
  *  Camera: THREE.PerspectiveCamera,
  *  Player: Player,
+ *  Players: Object.<string, { Connection: any, Mesh: THREE.Mesh, MeshAdded: boolean }>,
  *  DataManager: DataManager,
  *  CooldownManager: CooldownManager,
  * }} State
@@ -24,4 +25,6 @@ import { CooldownManager } from "./utils.js"
 /**
  * @type {State}
  */
-export const State = {}
+export const State = {
+    Players: {},
+}

@@ -2,6 +2,7 @@
 
 import Peer from 'peerjs';
 import { Enum } from './enums.js';
+import { State } from './state.js';
 
 //~ Types
 
@@ -88,6 +89,9 @@ function initPlayer(conn) {
     console.log(`Initializing other player with id ${conn.peer}.`);
 
     connectedPeers[conn.peer] = conn;
+    State.Players[conn.peer] = {
+        Connection: conn,
+    };
 
     Object.keys(playerAddedCallbacks).forEach(key => {
         playerAddedCallbacks[key](conn.peer);
@@ -96,11 +100,13 @@ function initPlayer(conn) {
     let handleDisconnect = () => {
         if (connectedPeers[conn.peer] === conn) {
             console.log(`Player disconnected: ${conn.peer}`);
-            delete connectedPeers[conn.peer];
 
             Object.keys(playerRemovedCallbacks).forEach(key => {
                 playerRemovedCallbacks[key](conn.peer);
             });
+            
+            delete connectedPeers[conn.peer];
+            delete State.Players[conn.peer];
         }
     };
 
@@ -135,7 +141,6 @@ function initPlayer(conn) {
                 return;
             }
 
-            console.log(dataRecievedCallbacks)
             Object.keys(dataRecievedCallbacks).forEach(key => {
                 dataRecievedCallbacks[key](data);
             });
@@ -195,6 +200,8 @@ document.getElementById('connect-btn').addEventListener('click', () => {
  * @returns {void}
  */
 export function sendData(type, data, conn) {
+    if (Object.keys(connectedPeers).length === 0) return;
+
     data.type = type;
 
     Object.keys(dataSendingCallbacks).forEach(key => {
@@ -271,4 +278,12 @@ export function onDataSending(type, callback, name) {
  */
 export function getClientId() {
     return clientId;
+}
+
+/**
+ * @param {string} id 
+ * @returns {any?}
+ */
+export function getConn(id) {
+    return connectedPeers[id];
 }

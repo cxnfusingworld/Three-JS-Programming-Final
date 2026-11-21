@@ -2,6 +2,8 @@
 
 import * as THREE from 'three';
 import { State } from '../core/state.js';
+import { sendData } from '../core/net.js';
+import { Enum } from '../core/enums.js';
 
 //~ Types
 
@@ -12,10 +14,11 @@ import { State } from '../core/state.js';
  *  z: number,
  *  innerRadius: number,
  *  outerRadius: number,
- *  color: [THREE.Color],
- *  emissiveIntensity: [number],
- *  startOpacity: [number],
- *  duration: [number],
+ *  color?: THREE.Color,
+ *  emissiveIntensity?: number,
+ *  startOpacity?: number,
+ *  duration?: number,
+ *  onHit?: (playerId: string) => void
  * }} ShockwaveData
  */
 
@@ -24,7 +27,7 @@ import { State } from '../core/state.js';
 /**
  * @param {ShockwaveData} data
  */
-export function Shockwave(data) {    
+export function Shockwave(data) {
     let geometry = new THREE.RingGeometry((data.innerRadius || 10) / 10, (data.outerRadius || 11) / 10);
     let material = new THREE.MeshStandardMaterial({
         color: data.color || 0xff5500,
@@ -38,20 +41,42 @@ export function Shockwave(data) {
     let ShockwaveMesh = new THREE.Mesh(geometry, material);
     ShockwaveMesh.position.set(data.x, data.y + 0.1, data.z);
     ShockwaveMesh.rotateX(THREE.MathUtils.degToRad(-90));
-    
+
     State.World.scene.add(ShockwaveMesh);
 
     let startTime = performance.now();
     let duration = data.duration || 400;
+    let maxRadius = data.outerRadius || 11;
+
+    /** @type {Set<string>} */
+    let hitPlayers = new Set();
 
     let update = (currentTime) => {
         let elapsed = currentTime - startTime;
         let progress = Math.min(elapsed / duration, 1.0);
 
-        let currentScale = data.outerRadius * progress;
+        let currentRadius = maxRadius * progress;
+        let currentScale = maxRadius * progress;
         ShockwaveMesh.scale.set(currentScale, currentScale, currentScale);
 
         material.opacity = (data.startOpacity || 0.8) * (1.0 - progress);
+
+        if (data.onHit) {
+            Object.keys(State.Players).forEach(playerId => {
+                let player = State.Players[playerId];
+                if (!player || !player.Mesh || hitPlayers.has(playerId)) return;
+
+                let dx = player.Mesh.position.x - data.x;
+                let dz = player.Mesh.position.z - data.z;
+                let distance = Math.sqrt(dx * dx + dz * dz);
+
+                if (distance <= currentRadius) {
+                    hitPlayers.add(playerId);
+                    console.log(`Shockwave hit player: ${playerId}!`);
+                    data.onHit(playerId);
+                }
+            });
+        }
 
         if (progress < 1.0) {
             requestAnimationFrame(update);

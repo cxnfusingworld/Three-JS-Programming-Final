@@ -8,8 +8,6 @@ import { EffectRegistry } from './effectRegistry.js';
 
 //~ Constants
 
-const LoadedPlayers = {}
-
 const PlayerGeometry = new THREE.CapsuleGeometry(0.5, 1, 10, 20);
 const PlayerMaterial = new THREE.MeshStandardMaterial({
     color: new THREE.Color().setRGB(1, 0.55, 0.2),
@@ -26,34 +24,19 @@ function syncPlayerMesh(id) {
     let playerMesh = new THREE.Mesh(PlayerGeometry, PlayerMaterial);
     playerMesh.castShadow = true;
 
-    LoadedPlayers[id] = {
-        Mesh: playerMesh,
-        MeshAdded: false,
-    }
+    State.Players[id].Mesh = playerMesh;
+    State.Players[id].MeshAdded = false;
 }
 
 /**
  * @param {string} id 
  */
 function removePlayerMesh(id) {
-    if (LoadedPlayers[id]) {
-        State.World.scene.remove(LoadedPlayers[id].Mesh);
-        delete LoadedPlayers[id];
-        console.log(`Removed mesh for player: ${id}`);
-    }
-}
+    let playerData = State.Players[id];
+    if (!playerData) return;
 
-/**
- * @param {import('./net.js').SyncType_SpawnEffect} data 
- * @returns {void}
- */
-function spawnEffect(data) {
-    let effect = EffectRegistry.effects[data.effectName];
-    if (!effect) {
-        console.log(`No effect with name ${data.effectName} exists.`); 
-        return;
-    }
-    effect(data.data);
+    State.World.scene.remove(playerData.Mesh);
+    console.log(`Removed mesh for player: ${id}`);
 }
 
 //~ Public API
@@ -71,7 +54,7 @@ onPlayerAdded(syncPlayerMesh, "ADD_PLAYER_SYNC");
 onPlayerRemoved(removePlayerMesh, "REMOVE_PLAYER_SYNC");
 
 onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
-    let playerData = LoadedPlayers[data.id];
+    let playerData = State.Players[data.id];
     if (!playerData || !playerData.Mesh) return;
 
     if (!playerData.MeshAdded && State.World) {
@@ -85,10 +68,15 @@ onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
     playerData.Mesh.rotation.y = data.rotation;
 }, "PLAYER_SYNC");
 
-onDataRecieved(Enum.SyncType.SpawnEffect, spawnEffect, "SPAWN_EFFECT_SYNC");
-onDataSending(Enum.SyncType.SpawnEffect, spawnEffect, "SPAWN_EFFECT_SYNC");
+onDataRecieved(Enum.SyncType.SpawnEffect, (data) => {
+    EffectRegistry.spawnEffect(data.effectName, data.data, false);
+}, "SPAWN_EFFECT_SYNC");
 
 onDataRecieved(Enum.SyncType.Damage, (data) => {
     if (!State.Player || !data.damage) return;
     State.Player.health -= data.damage;
+    console.log(`Took ${data.damage} damage, now at ${State.Player.health} HP.`);
+    if (State.Player.health <= 0) {
+        console.log("You died.")
+    }
 }, "DAMAGE_SYNC");

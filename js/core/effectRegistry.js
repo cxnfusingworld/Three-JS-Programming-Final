@@ -2,6 +2,8 @@
 
 import { Explosion } from "../effects/explosion.js";
 import { Shockwave } from "../effects/shockwave.js";
+import { Enum } from "./enums.js";
+import { sendData } from "./net.js";
 
 //~ Types
 
@@ -12,6 +14,37 @@ import { Shockwave } from "../effects/shockwave.js";
  * }} EffectPayloadMap
  */
 
+//~ Helper Functions
+
+/**
+ * @template {Object} T
+ * @param {T} obj
+ * @returns {T}
+ */
+function removeFunctions(obj) {
+    if (obj === null || typeof(obj) !== 'object') {
+        return typeof(obj) === 'function' ? undefined : obj;
+    }
+
+    if (Array.isArray(obj)) {
+        return obj
+            .map(item => this.removeFunctions(item))
+            .filter(item => item !== undefined);
+    }
+
+    const cleanObj = {};
+    for (const key of Object.keys(obj)) {
+        const value = obj[key];
+        if (typeof(value) !== 'function') {
+            const cleaned = removeFunctions(value);
+            if (cleaned !== undefined) {
+                cleanObj[key] = cleaned;
+            }
+        }
+    }
+    return cleanObj;
+}
+
 //~ Public API
 
 class EffectRegistryCreator {
@@ -20,6 +53,30 @@ class EffectRegistryCreator {
             "Explosion": Explosion,
             "Shockwave": Shockwave,
         };
+    }
+
+    /**
+     * @template {keyof EffectPayloadMap} K
+     * @param {K} effectName 
+     * @param {EffectPayloadMap[K]} data 
+     * @param {boolean?} replicate 
+     */
+    spawnEffect(effectName, data, replicate) {
+        let effect = this.effects[effectName];
+        if (!effect) {
+            console.log(`No effect with name ${effectName} exists.`);
+            return;
+        }
+        effect(data);
+
+        if (replicate) {
+            let replicatedData = removeFunctions(data);
+
+            sendData(Enum.SyncType.SpawnEffect, {
+                effectName: effectName,
+                data: replicatedData,
+            });
+        }
     }
 }
 
