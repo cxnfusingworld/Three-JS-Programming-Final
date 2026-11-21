@@ -59,9 +59,10 @@ class EffectRegistryCreator {
      * @template {keyof EffectPayloadMap} K
      * @param {K} effectName 
      * @param {EffectPayloadMap[K]} data 
-     * @param {boolean?} replicate 
+     * @param {boolean?} replicate
+     * @param {EffectPayloadMap[K]?} replicatedData
      */
-    spawnEffect(effectName, data, replicate) {
+    spawnEffect(effectName, data, replicate, replicatedData) {
         let effect = this.effects[effectName];
         if (!effect) {
             console.log(`No effect with name ${effectName} exists.`);
@@ -70,8 +71,7 @@ class EffectRegistryCreator {
         effect(data);
 
         if (replicate) {
-            let replicatedData = removeFunctions(data);
-
+            replicatedData = removeFunctions(replicatedData || data);
             sendData(Enum.SyncType.SpawnEffect, {
                 effectName: effectName,
                 data: replicatedData,

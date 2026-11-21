@@ -58,7 +58,19 @@ export class GroundPoundAbility {
 
                     sendData(Enum.SyncType.Damage, { damage: 25 }, conn)
                 }
-            }, true);
+            }, true, {
+                x: player.mesh.position.x,
+                y: player.mesh.position.y - 1,
+                z: player.mesh.position.z,
+                innerRadius: 7,
+                outerRadius: 8,
+
+                color: new THREE.Color().setRGB(1, 0.55, 0.2),
+                startOpacity: 0.05,
+                emissiveIntensity: 10,
+
+                duration: 1000,
+            });
             EffectRegistry.spawnEffect("Explosion", {
                 x: player.mesh.position.x,
                 y: player.mesh.position.y - 1,
@@ -70,7 +82,27 @@ export class GroundPoundAbility {
                 emissiveIntensity: 5,
 
                 duration: 300,
-            }, true);
+                
+                onHit: (id) => {
+                    let playerData = State.Players[id];
+                    let conn = playerData && playerData.Connection;
+                    if (!conn) return;
+
+                    sendData(Enum.SyncType.Damage, { damage: 40 }, conn)
+                }
+            }, true, {
+                x: player.mesh.position.x,
+                y: player.mesh.position.y - 1,
+                z: player.mesh.position.z,
+                innerRadius: 7,
+                outerRadius: 8,
+
+                color: new THREE.Color().setRGB(1, 0.55, 0.2),
+                startOpacity: 0.05,
+                emissiveIntensity: 10,
+
+                duration: 300,
+            });
 
             player.velocity.y = 8 * Math.sqrt(this.originalHeight);
             player.isGrounded = false;

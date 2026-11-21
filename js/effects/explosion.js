@@ -11,10 +11,11 @@ import { State } from '../core/state.js';
  *  y: number,
  *  z: number,
  *  radius: number,
- *  color: [THREE.Color],
- *  emissiveIntensity: [number],
- *  startOpacity: [number],
- *  duration: [number],
+ *  color?: THREE.Color,
+ *  emissiveIntensity?: number,
+ *  startOpacity?: number,
+ *  duration?: number,
+ *  onHit?: (playerId: string) => void
  * }} ExplosionData
  */
 
@@ -41,6 +42,9 @@ export function Explosion(data) {
 
     let startTime = performance.now();
     let duration = data.duration || 400;
+    
+    /** @type {Set<string>} */
+    let hitPlayers = new Set();
 
     let update = (currentTime) => {
         let elapsed = currentTime - startTime;
@@ -50,6 +54,24 @@ export function Explosion(data) {
         explosionMesh.scale.set(currentScale, currentScale, currentScale);
 
         material.opacity = (data.startOpacity || 0.8) * (1.0 - progress);
+
+        if (data.onHit) {
+            Object.keys(State.Players).forEach(playerId => {
+                let player = State.Players[playerId];
+                if (!player || !player.Mesh || hitPlayers.has(playerId)) return;
+
+                let dx = player.Mesh.position.x - data.x;
+                let dy = player.Mesh.position.y - data.y;
+                let dz = player.Mesh.position.z - data.z;
+                let distance = Math.sqrt(dx * dx + dz * dz);
+
+                if (distance <= currentScale && Math.abs(dy) <= 1) {
+                    hitPlayers.add(playerId);
+                    console.log(`Explosion hit player: ${playerId}!`);
+                    data.onHit(playerId);
+                }
+            });
+        }
 
         if (progress < 1.0) {
             requestAnimationFrame(update);

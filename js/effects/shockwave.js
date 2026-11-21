@@ -2,8 +2,6 @@
 
 import * as THREE from 'three';
 import { State } from '../core/state.js';
-import { sendData } from '../core/net.js';
-import { Enum } from '../core/enums.js';
 
 //~ Types
 
@@ -46,7 +44,8 @@ export function Shockwave(data) {
 
     let startTime = performance.now();
     let duration = data.duration || 400;
-    let maxRadius = data.outerRadius || 11;
+    let maxOuterRadius = data.outerRadius || 11;
+    let maxInnerRadius = data.innerRadius || 10;
 
     /** @type {Set<string>} */
     let hitPlayers = new Set();
@@ -55,8 +54,9 @@ export function Shockwave(data) {
         let elapsed = currentTime - startTime;
         let progress = Math.min(elapsed / duration, 1.0);
 
-        let currentRadius = maxRadius * progress;
-        let currentScale = maxRadius * progress;
+        let currentOuterRadius = maxOuterRadius * progress;
+        let currentInnerRadius = maxInnerRadius * progress
+        let currentScale = maxOuterRadius * progress;
         ShockwaveMesh.scale.set(currentScale, currentScale, currentScale);
 
         material.opacity = (data.startOpacity || 0.8) * (1.0 - progress);
@@ -67,10 +67,11 @@ export function Shockwave(data) {
                 if (!player || !player.Mesh || hitPlayers.has(playerId)) return;
 
                 let dx = player.Mesh.position.x - data.x;
+                let dy = player.Mesh.position.y - data.y;
                 let dz = player.Mesh.position.z - data.z;
                 let distance = Math.sqrt(dx * dx + dz * dz);
 
-                if (distance <= currentRadius) {
+                if (distance <= currentOuterRadius && distance >= currentInnerRadius && Math.abs(dy) <= 1) {
                     hitPlayers.add(playerId);
                     console.log(`Shockwave hit player: ${playerId}!`);
                     data.onHit(playerId);
