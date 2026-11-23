@@ -1,6 +1,19 @@
 //~ Imports
 
 import * as THREE from 'three';
+import { State } from './state.js';
+
+//~ Types
+
+/**
+ * @typedef {{
+ *  x?: number,
+ *  y?: number,
+ *  z?: number,
+ *  scalar?: number,
+ *  applyType?: "add" | "subtract" | "multiply" | "divide"
+ * }} ApplyVelocityData
+ */
 
 //~ Public API
 
@@ -132,4 +145,22 @@ export class Randomizer {
     randomColor() {
         return Math.floor(Math.random() * (256 ** 3 - 1));
     }
+}
+
+//~ Public Methods
+
+/**
+ * @param {ApplyVelocityData} data 
+ * @returns {void}
+ */
+export function applyVelocity(data) {
+    if (!State.Player) return;
+
+    let veloc = new THREE.Vector3(data.x || 0, data.y || 0, data.z || 0).multiplyScalar(data.scalar || 1);
+    let applyType = data.applyType || "add";
+    
+    if (applyType == "add") State.Player.velocity.add(veloc);
+    else if (applyType == "subtract") State.Player.velocity.sub(veloc);
+    else if (applyType == "multiply") State.Player.velocity.multiply(veloc);
+    else if (applyType == "divide") State.Player.velocity.divide(veloc);
 }

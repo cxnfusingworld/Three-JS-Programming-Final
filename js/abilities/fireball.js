@@ -3,8 +3,9 @@
 import * as THREE from 'three';
 import { State } from "../core/state.js";
 import { EffectRegistry } from '../core/effectRegistry.js';
-import { sendData } from '../core/net.js';
+import { getClientId, sendData } from '../core/net.js';
 import { Enum } from '../core/enums.js';
+import { applyVelocity } from '../core/utils.js';
 
 //~ Public API
 
@@ -20,7 +21,7 @@ export class FireballAbility {
      */
     activate() {
         let player = State.Player;
-        if (!player || player.isGrounded) return false;
+        if (!player) return false;
         if (!State.CooldownManager || State.CooldownManager.onCooldown("Ability_Fireball")) return false;
 
         let lastMouseInput = State.Input && State.Input.lastMouseInput;
@@ -49,6 +50,7 @@ export class FireballAbility {
             y: player.mesh.position.y,
             z: player.mesh.position.z,
             radius: 0.5,
+            hitRadius: 0.1,
 
             speed: 10,
             dirX: direction.x,
@@ -60,7 +62,7 @@ export class FireballAbility {
                 let conn = playerData && playerData.Connection;
                 if (!conn) return;
 
-                sendData(Enum.SyncType.Damage, { damage: 40 }, conn)
+                sendData(Enum.SyncType.Damage, { damage: 40 }, conn);
             },
             onFloorHit: (finalPos) => {
                 EffectRegistry.spawnEffect("Explosion", {
@@ -75,12 +77,19 @@ export class FireballAbility {
     
                     duration: 300,
                     
+                    canHitSelf: true,
                     onHit: (id) => {
+                        if (id === getClientId()) {
+                            applyVelocity({ y: 20 });
+                            return;
+                        }
+
                         let playerData = State.Players[id];
                         let conn = playerData && playerData.Connection;
                         if (!conn) return;
 
-                        sendData(Enum.SyncType.Damage, { damage: 25 }, conn)
+                        sendData(Enum.SyncType.Damage, { damage: 25 }, conn);
+                        sendData(Enum.SyncType.ApplyVelocity, { y: 20 }, conn);
                     }
                 }, true)
             }

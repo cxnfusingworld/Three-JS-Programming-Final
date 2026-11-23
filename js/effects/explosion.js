@@ -2,6 +2,7 @@
 
 import * as THREE from 'three';
 import { State } from '../core/state.js';
+import { getClientId } from '../core/net.js';
 
 //~ Types
 
@@ -15,7 +16,8 @@ import { State } from '../core/state.js';
  *  emissiveIntensity?: number,
  *  startOpacity?: number,
  *  duration?: number,
- *  onHit?: (playerId: string) => void
+ *  onHit?: (playerId: string) => void,
+ *  canHitSelf?: boolean,
  * }} ExplosionData
  */
 
@@ -56,8 +58,10 @@ export function Explosion(data) {
         material.opacity = (data.startOpacity || 0.8) * (1.0 - progress);
 
         if (data.onHit) {
-            Object.keys(State.Players).forEach(playerId => {
+            let checkHit = (playerId) => {
                 let player = State.Players[playerId];
+                if (playerId === getClientId()) player = { Mesh: State.Player.mesh };
+
                 if (!player || !player.Mesh || hitPlayers.has(playerId)) return;
 
                 let dx = player.Mesh.position.x - data.x;
@@ -70,7 +74,10 @@ export function Explosion(data) {
                     console.log(`Explosion hit player: ${playerId}!`);
                     data.onHit(playerId);
                 }
-            });
+            }
+
+            Object.keys(State.Players).forEach(checkHit);
+            if (data.canHitSelf === true) checkHit(getClientId());
         }
 
         if (progress < 1.0) {

@@ -56,7 +56,8 @@ export class GroundPoundAbility {
                     let conn = playerData && playerData.Connection;
                     if (!conn) return;
 
-                    sendData(Enum.SyncType.Damage, { damage: 25 }, conn)
+                    sendData(Enum.SyncType.Damage, { damage: 25 }, conn);
+                    sendData(Enum.SyncType.ApplyVelocity, { y: 10 }, conn);
                 }
             }, true, {
                 x: player.mesh.position.x,
@@ -88,7 +89,7 @@ export class GroundPoundAbility {
                     let conn = playerData && playerData.Connection;
                     if (!conn) return;
 
-                    sendData(Enum.SyncType.Damage, { damage: 40 }, conn)
+                    sendData(Enum.SyncType.Damage, { damage: 40 }, conn);
                 }
             }, true, {
                 x: player.mesh.position.x,

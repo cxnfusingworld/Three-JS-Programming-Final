@@ -110,10 +110,11 @@ export class Player {
         this.mesh.position.x = Math.min(Math.max(-Config.MAP_SIZE / 2, this.mesh.position.x), Config.MAP_SIZE / 2);
         this.mesh.position.z = Math.min(Math.max(-Config.MAP_SIZE / 2, this.mesh.position.z), Config.MAP_SIZE / 2);
 
+        this.isGrounded = this.mesh.position.y <= 1;
+
         if (this.mesh.position.y <= 1) {
             this.mesh.position.y = 1;
             this.velocity.y = 0;
-            this.isGrounded = true;
         }
 
         State.World.collider.position.y = this.mesh.position.y;

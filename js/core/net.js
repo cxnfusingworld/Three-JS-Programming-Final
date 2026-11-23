@@ -54,11 +54,23 @@ import { State } from './state.js';
 
 /**
  * @typedef {{
+ *  type: Enum["SyncType"]["ApplyVelocity"],
+ *  x?: number,
+ *  y?: number,
+ *  z?: number,
+ *  scalar?: number,
+ *  applyType?: "add" | "subtract" | "multiply" | "divide"
+ * }} SyncType_ApplyVelocity
+ */
+
+/**
+ * @typedef {{
  *  PLAYER_UPDATE: SyncType_PlayerUpdate,
  *  PLAYER_ADDED: SyncType_PlayerAdded,
  *  INVOKE_OTHERS: SyncType_InvokeOtherPlayers,
  *  SPAWN_EFFECT: SyncType_SpawnEffect,
- *  DAMAGE: SyncType_Damage
+ *  DAMAGE: SyncType_Damage,
+ *  APPLY_VELOCITY: SyncType_ApplyVelocity,
  * }} SyncTypeData
  */
 

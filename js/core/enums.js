@@ -7,6 +7,7 @@ export const Enum = Object.freeze({
         "InvokeOtherPlayers": "INVOKE_OTHERS",
         "SpawnEffect": "SPAWN_EFFECT",
         "Damage": "DAMAGE",
+        "ApplyVelocity": "APPLY_VELOCITY",
     }),
 
     Ability: Object.freeze({

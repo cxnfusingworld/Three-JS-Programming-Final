@@ -5,6 +5,7 @@ import { onDataRecieved, onDataSending, onPlayerAdded, onPlayerRemoved } from '.
 import { State } from './state.js';
 import { Enum } from './enums.js';
 import { EffectRegistry } from './effectRegistry.js';
+import { applyVelocity } from './utils.js';
 
 //~ Constants
 
@@ -66,17 +67,19 @@ onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
     playerData.Mesh.position.y = data.y;
     playerData.Mesh.position.z = data.z;
     playerData.Mesh.rotation.y = data.rotation;
-}, "PLAYER_SYNC");
+}, "PLAYER_UPDATE_SYNC");
 
 onDataRecieved(Enum.SyncType.SpawnEffect, (data) => {
     EffectRegistry.spawnEffect(data.effectName, data.data, false);
 }, "SPAWN_EFFECT_SYNC");
 
 onDataRecieved(Enum.SyncType.Damage, (data) => {
-    if (!State.Player || !data.damage) return;
+    if (!State.Player || !data.damage || State.Player.health <= 0) return;
     State.Player.health -= data.damage;
     console.log(`Took ${data.damage} damage, now at ${State.Player.health} HP.`);
     if (State.Player.health <= 0) {
         console.log("You died.")
     }
 }, "DAMAGE_SYNC");
+
+onDataRecieved(Enum.SyncType.ApplyVelocity, applyVelocity, "APPLY_VELOCITY_SYNC")

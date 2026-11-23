@@ -2,6 +2,7 @@
 
 import * as THREE from 'three';
 import { State } from '../core/state.js';
+import { getClientId } from '../core/net.js';
 
 //~ Types
 
@@ -19,7 +20,8 @@ import { State } from '../core/state.js';
  *  emissiveIntensity?: number,
  *  hitRadius: number?,
  *  onFloorHit?: (finalPos: THREE.Vector3) => void,
- *  onHit?: (playerId: string) => void
+ *  onHit?: (playerId: string) => void,
+ *  canHitSelf?: boolean,
  * }} FireballData
  */
 
@@ -54,8 +56,10 @@ export function Fireball(data) {
         fireballMesh.position.add(moveVector);
 
         if (data.onHit) {
-            Object.keys(State.Players).forEach(playerId => {
+            let checkHit = (playerId) => {
                 let player = State.Players[playerId];
+                if (playerId === getClientId()) player = { Mesh: State.Player.mesh };
+
                 if (!player || !player.Mesh || hitPlayers.has(playerId)) return;
 
                 let dx = player.Mesh.position.x - fireballMesh.position.x;
@@ -68,7 +72,10 @@ export function Fireball(data) {
                     console.log(`Fireball hit player: ${playerId}!`);
                     data.onHit(playerId);
                 }
-            });
+            }
+            
+            Object.keys(State.Players).forEach(checkHit);
+            if (data.canHitSelf === true) checkHit(getClientId());
         }        
 
         if (Math.abs(fireballMesh.position.y) <= (data.hitRadius || geometry.parameters.radius)) {
