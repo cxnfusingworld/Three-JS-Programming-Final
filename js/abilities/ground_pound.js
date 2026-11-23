@@ -94,8 +94,7 @@ export class GroundPoundAbility {
                 x: player.mesh.position.x,
                 y: player.mesh.position.y - 1,
                 z: player.mesh.position.z,
-                innerRadius: 7,
-                outerRadius: 8,
+                radius: 1.5,
 
                 color: new THREE.Color().setRGB(1, 0.55, 0.2),
                 startOpacity: 0.05,

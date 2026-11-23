@@ -27,10 +27,10 @@ import { State } from '../core/state.js';
 export function Explosion(data) {
     let geometry = new THREE.SphereGeometry(1, 16, 16);
     let material = new THREE.MeshStandardMaterial({
-        color: data.color || 0xff5500,
+        color: data.color || new THREE.Color().setRGB(1, 0.3, 0),
         transparent: true,
         opacity: data.startOpacity || 0.8,
-        emissive: data.color || 0xff5500,
+        emissive: data.color || new THREE.Color().setRGB(1, 0.3, 0),
         emissiveIntensity: data.emissiveIntensity || 6,
         depthWrite: false,
     });
@@ -63,9 +63,9 @@ export function Explosion(data) {
                 let dx = player.Mesh.position.x - data.x;
                 let dy = player.Mesh.position.y - data.y;
                 let dz = player.Mesh.position.z - data.z;
-                let distance = Math.sqrt(dx * dx + dz * dz);
+                let distance = Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2);
 
-                if (distance <= currentScale && Math.abs(dy) <= 1) {
+                if (distance <= currentScale) {
                     hitPlayers.add(playerId);
                     console.log(`Explosion hit player: ${playerId}!`);
                     data.onHit(playerId);

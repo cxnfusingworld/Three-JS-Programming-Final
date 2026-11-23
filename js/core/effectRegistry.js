@@ -1,6 +1,7 @@
 //~ Imports
 
 import { Explosion } from "../effects/explosion.js";
+import { Fireball } from "../effects/fireball.js";
 import { Shockwave } from "../effects/shockwave.js";
 import { Enum } from "./enums.js";
 import { sendData } from "./net.js";
@@ -11,6 +12,7 @@ import { sendData } from "./net.js";
  * @typedef {{
  *  Explosion: import("../effects/explosion.js").ExplosionData,
  *  Shockwave: import("../effects/shockwave.js").ShockwaveData,
+ *  Fireball: import("../effects/fireball.js").FireballData,
  * }} EffectPayloadMap
  */
 
@@ -52,6 +54,7 @@ class EffectRegistryCreator {
         this.effects = {
             "Explosion": Explosion,
             "Shockwave": Shockwave,
+            "Fireball": Fireball,
         };
     }
 

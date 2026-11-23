@@ -54,6 +54,7 @@ export class Player {
         input.onKeyDown(function(input) {
             if (input.code === "KeyQ") AbilityHandler.useAbility("Dash");
             if (input.code === "KeyE") AbilityHandler.useAbility("GroundPound");
+            if (input.code === "KeyF") AbilityHandler.useAbility("Fireball");
         })
     }
 
@@ -114,6 +115,8 @@ export class Player {
             this.velocity.y = 0;
             this.isGrounded = true;
         }
+
+        State.World.collider.position.y = this.mesh.position.y;
 
         this.sword.update(dt);
 

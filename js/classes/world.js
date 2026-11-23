@@ -13,6 +13,7 @@ export class World {
     constructor(scene) {
         this.scene = scene;
 
+        this.createRayCollider();
         this.createBaseplate();
         this.setupLights();
     }
@@ -50,6 +51,16 @@ export class World {
 
         const grid = new THREE.GridHelper(Config.MAP_SIZE, Config.MAP_SIZE, new THREE.Color().setRGB(0, 0.23, 0.1), new THREE.Color().setRGB(0.08, 0.8, 0.15));
         this.scene.add(grid);
+    }
+
+    createRayCollider() {
+        const geometry = new THREE.PlaneGeometry(Config.MAP_SIZE * 2, Config.MAP_SIZE * 2);
+        const material = new THREE.MeshStandardMaterial({ opacity: 0, transparent: true, depthWrite: false });
+        this.collider = new THREE.Mesh(geometry, material);
+        
+        this.collider.rotation.x = -Math.PI / 2;
+        this.collider.position.y += 1;
+        this.scene.add(this.collider);
     }
 
     update() {

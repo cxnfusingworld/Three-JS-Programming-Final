@@ -50,7 +50,7 @@ export class Sword {
         );
         this.raycaster.setFromCamera(this.pointer, State.Camera);
 
-        let intersects = this.raycaster.intersectObjects([State.World.floor], false);
+        let intersects = this.raycaster.intersectObjects([State.World.collider], false);
 
         if (intersects.length > 0) {
             let hitPosition = intersects[0].point;

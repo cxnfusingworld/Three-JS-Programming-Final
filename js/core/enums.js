@@ -12,5 +12,6 @@ export const Enum = Object.freeze({
     Ability: Object.freeze({
         "Dash": "Dash",
         "GroundPound": "GroundPound",
+        "Fireball": "Fireball",
     }),
 });

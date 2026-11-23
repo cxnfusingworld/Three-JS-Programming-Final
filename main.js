@@ -47,6 +47,8 @@ function animate() {
     let dt = clock.getDelta();
     dt = Math.min(dt, 0.1);
 
+    State.DeltaTime = dt;
+
     AbilityHandler.update(dt);
 
     player.update(dt);
@@ -62,8 +64,10 @@ function animate() {
 
 State.Scene = scene;
 State.World = world;
+State.Clock = clock;
 State.Camera = camera;
 State.Player = player;
+State.Input = input;
 State.DataManager = DataManager;
 State.CooldownManager = cooldownManager;
 

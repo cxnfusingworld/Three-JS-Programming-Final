@@ -4,6 +4,7 @@ import { Enum } from "./enums.js";
 
 import { Dash } from "../abilities/dash.js";
 import { GroundPound } from "../abilities/ground_pound.js";
+import { Fireball } from "../abilities/fireball.js";
 
 //~ Types
 
@@ -19,7 +20,8 @@ import { GroundPound } from "../abilities/ground_pound.js";
 const RunningAbilities = [];
 const AbilityRegistry = {
     "Dash": Dash,
-    "GroundPound": GroundPound
+    "GroundPound": GroundPound,
+    "Fireball": Fireball,
 };
 
 //~ Public API
