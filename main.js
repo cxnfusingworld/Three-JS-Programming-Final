@@ -17,6 +17,7 @@ import { Player } from './js/classes/player.js';
 
 import './js/core/net.js';
 import './js/core/sync.js';
+import './js/core/ui.js';
 
 //~ Constants
 

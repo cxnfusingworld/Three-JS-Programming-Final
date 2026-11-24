@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Three.js Programming Final</title>
+    <link rel="stylesheet" href="./style.css">
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #111;
+            background-color: #ffffff;
         }
     </style>
 </head>
@@ -25,16 +26,22 @@
     </script>
     <script type="module" src="./main.js"></script>
 
-    <div id="ui-container"
-        style="position: absolute; top: 20px; left: 20px; z-index: 10; color: white; font-family: monospace; background: rgba(0, 0, 0, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #333;">
-        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #0ff;">Multiplayer Lobby</h3>
-        <p style="margin: 0 0 10px 0; font-size: 12px;">Your ID: <span id="my-id"
-                style="color: #ff0;">Generating...</span></p>
+    <div id="ui-container">
+        <div id="main-menu" class="menu-screen">
+            <h1>[ Three.js Programming Final ]</h1>
+            <button id="btn-ffa">// [Host FFA]</button>
+            <button id="btn-teams">// [Host Deathmatch]</button>
 
-        <input type="text" id="friend-id-input" autocomplete="off" placeholder="Paste Host ID here..."
-            style="padding: 6px; width: 180px; background: #222; border: 1px solid #444; color: white; border-radius: 4px; margin-right: 5px;">
-        <button id="connect-btn"
-            style="padding: 6px 12px; background: #0ff; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Connect</button>
+            <div class="join-row">
+                <secondary_button id="btn-join">// [Join]</secondary_button>
+                <input type="text" id="input-room-code" autocomplete=off placeholder="[Room Code...]" />
+            </div>
+        </div>
+
+        <div id="lobby-hud" class="hud-panel" style="display: none;">
+            <button id="btn-copy-code" title="Click to copy">[Copy ID]<span id="room-code-display"></span></button>
+            <button id="btn-leave">[Leave]</button>
+        </div>
     </div>
 </body>
 

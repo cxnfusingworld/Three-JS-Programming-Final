@@ -3,6 +3,7 @@
 import Peer from 'peerjs';
 import { Enum } from './enums.js';
 import { State } from './state.js';
+import { sleep } from './utils.js';
 
 //~ Types
 
@@ -116,7 +117,7 @@ function initPlayer(conn) {
             Object.keys(playerRemovedCallbacks).forEach(key => {
                 playerRemovedCallbacks[key](conn.peer);
             });
-            
+
             delete connectedPeers[conn.peer];
             delete State.Players[conn.peer];
         }
@@ -175,31 +176,13 @@ function initPlayer(conn) {
 
 peer.on('open', (id) => {
     console.log('My peer ID is: ' + id);
-    document.getElementById('my-id').innerText = id;
+    // document.getElementById('my-id').innerText = id;
     clientId = id;
 });
 
 peer.on('connection', (conn) => {
     console.log('A player connected to us!');
     initPlayer(conn);
-});
-
-document.getElementById('connect-btn').addEventListener('click', () => {
-    const friendId = document.getElementById('friend-id-input').value.trim();
-    if (!friendId) {
-        alert('Please paste a Peer ID first!');
-        return;
-    }
-
-    console.log('Connecting to:', friendId);
-
-    let conn = peer.connect(friendId);
-    conn.on('open', () => {
-        console.log('Successfully connected to the host!')
-        alert('Connected successfully!');
-
-        initPlayer(conn);
-    });
 });
 
 //~ Public API
@@ -226,7 +209,7 @@ export function sendData(type, data, conn) {
             let peerConn = connectedPeers[id];
             peerConn.send(data);
         });
-    }    
+    }
 }
 
 /**
@@ -298,4 +281,37 @@ export function getClientId() {
  */
 export function getConn(id) {
     return connectedPeers[id];
+}
+
+/**
+ * @param {string} id 
+ */
+export async function connectToPeer(id) {
+    console.log('Connecting to:', id);
+
+    let conn = peer.connect(id);
+    if (!conn) return false;
+
+    let success = false;
+
+    conn.on('open', () => {
+        success = true;
+
+        console.log('Successfully connected to the host!')
+        alert('Connected successfully!');
+
+        initPlayer(conn);
+    });
+
+    await new Promise(async (resolve) => {
+        let elapsed = 0;
+        while (elapsed < 3000) {
+            elapsed += 100;
+            if (success) break;
+            await sleep(100);
+        }
+        resolve(success)
+    }).catch();
+
+    return success;
 }

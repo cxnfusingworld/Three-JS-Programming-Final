@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700&display=swap');
+
+code, pre {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+:root {
+    --bg-dark: rgba(15, 15, 20, 0.9);
+    --accent-primary: #8800ff;
+    --accent-secondary: #a600ff;
+    --accent-hover: #ff0040;
+    --accent-primary-shadow: #500092;
+    --accent-secondary-shadow: #6b0092;
+    --accent-hover-shadow: #69001a;
+    --text-main: #ffffff;
+    --border-radius: 8px;
+    --primary-button-width: 60%;
+    --secondary-button-width: 20%;
+}
+
+#ui-container {
+    position: fixed;
+    padding: 20px;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    z-index: 1000;
+}
+
+.menu-screen {
+    pointer-events: auto;
+    background: var(--bg-dark);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    padding-top: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    color: white;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.menu-screen h1 {
+    margin: 0;
+    font-family: 'JetBrains Mono';
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 1px;
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.menu-screen button {
+    width: var(--primary-button-width);
+    padding: 14px 20px;
+    text-align: left;
+    font-family: 'JetBrains Mono';
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    background: var(--accent-primary);
+    border: none;
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px var(--accent-primary-shadow);
+}
+
+.menu-screen button:hover {
+    background: var(--accent-hover);
+    transform: translateX(3%);
+    width: calc(var(--primary-button-width) + 10%);
+    box-shadow: 0 6px 16px var(--accent-hover-shadow);
+}
+
+.menu-screen secondary_button {
+    width: var(--secondary-button-width);
+    padding: 14px 20px;
+    text-align: left;
+    font-family: 'JetBrains Mono';
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    background: var(--accent-primary);
+    border: none;
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px var(--accent-primary-shadow);
+}
+
+.menu-screen secondary_button:hover {
+    background: var(--accent-hover);
+    width: calc(var(--secondary-button-width) + 5%);
+    box-shadow: 0 6px 16px var(--accent-hover-shadow);
+}
+
+.join-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.join-row input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--accent-primary);
+    box-shadow: 0 5px 15px var(--accent-primary-shadow);
+    color: var(--text-main);
+    font-family: 'JetBrains Mono', monospace;
+    padding: 10px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.join-row input:focus {
+    border: 1px solid var(--accent-hover);
+    box-shadow: 0 5px 15px var(--accent-hover-shadow);
+}
+
+.hud-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    pointer-events: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.hud-panel button {
+    background: var(--bg-dark);
+    border: 1px solid var(--accent-primary);
+    color: var(--text-main);
+    font-family: 'JetBrains Mono', monospace;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hud-panel button:hover {
+    padding: 10px 20px;
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}

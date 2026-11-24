@@ -164,3 +164,10 @@ export function applyVelocity(data) {
     else if (applyType == "multiply") State.Player.velocity.multiply(veloc);
     else if (applyType == "divide") State.Player.velocity.divide(veloc);
 }
+
+/**
+ * @param {number} ms 
+ */
+export function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
