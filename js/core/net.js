@@ -15,11 +15,11 @@ import { sleep } from './utils.js';
  * @typedef {{
  *  type: Enum["SyncType"]["PlayerUpdate"],
  *  id: string,
- *  x: number,
- *  y: number,
- *  z: number,
- *  rotation: number,
+ *  x: number?,
+ *  y: number?,
+ *  z: number?,
  *  health: number?,
+ * 	kills: number?,
  * }} SyncType_PlayerUpdate
  */
 
@@ -28,6 +28,14 @@ import { sleep } from './utils.js';
  *  type: Enum["SyncType"]["PlayerAdded"],
  *  id: string,
  * }} SyncType_PlayerAdded
+ */
+
+/**
+ * @typedef {{
+ *  type: Enum["SyncType"]["PlayerSpawnUpdate"],
+ * 	id: string,
+ * 	spawned: boolean,
+ * }} SyncType_PlayerSpawnUpdate
  */
 
 /**
@@ -49,6 +57,7 @@ import { sleep } from './utils.js';
 /**
  * @typedef {{
  *  type: Enum["SyncType"]["Damage"],
+ * 	id: string,
  *  damage: number,
  * }} SyncType_Damage
  */
@@ -68,6 +77,8 @@ import { sleep } from './utils.js';
  * @typedef {{
  *  PLAYER_UPDATE: SyncType_PlayerUpdate,
  *  PLAYER_ADDED: SyncType_PlayerAdded,
+ *  PLAYER_SPAWN_UPDATE: SyncType_PlayerSpawnUpdate,
+ *  PLAYER_KILLS_UPDATE: SyncType_PlayerKillsUpdate,
  *  INVOKE_OTHERS: SyncType_InvokeOtherPlayers,
  *  SPAWN_EFFECT: SyncType_SpawnEffect,
  *  DAMAGE: SyncType_Damage,
@@ -79,12 +90,12 @@ import { sleep } from './utils.js';
 
 const peer = new Peer();
 
-const dataRecievedCallbacks = {};
-const dataSendingCallbacks = {};
-const playerAddedCallbacks = {};
-const playerRemovedCallbacks = {};
+const DataRecievedCallbacks = {};
+const DataSendingCallbacks = {};
+const PlayerAddedCallbacks = {};
+const PlayerRemovedCallbacks = {};
 
-const connectedPeers = {}
+const ConnectedPeers = {}
 
 //~ Variables
 
@@ -96,29 +107,34 @@ let clientId = null;
 //~ Helper Functions
 
 function initPlayer(conn) {
-	if (connectedPeers[conn.peer] === conn) return;
-	if (connectedPeers[conn.peer]) connectedPeers[conn.peer].close();
+	if (ConnectedPeers[conn.peer] === conn) return;
+	if (ConnectedPeers[conn.peer]) ConnectedPeers[conn.peer].close();
 
 	console.log(`Initializing other player with id ${conn.peer}.`);
 
-	connectedPeers[conn.peer] = conn;
+	ConnectedPeers[conn.peer] = conn;
 	State.Players[conn.peer] = {
 		Connection: conn,
+		State: {
+			Name: "Opponent",
+			Kills: 0,
+			Health: 100,
+		}
 	};
 
-	Object.values(playerAddedCallbacks).forEach(callback => {
+	Object.values(PlayerAddedCallbacks).forEach(callback => {
 		callback(conn.peer);
 	});
 
 	let handleDisconnect = () => {
-		if (connectedPeers[conn.peer] === conn) {
+		if (ConnectedPeers[conn.peer] === conn) {
 			console.log(`Player disconnected: ${conn.peer}`);
 
-			Object.values(playerRemovedCallbacks).forEach(callback => {
+			Object.values(PlayerRemovedCallbacks).forEach(callback => {
 				callback(conn.peer);
 			});
 
-			delete connectedPeers[conn.peer];
+			delete ConnectedPeers[conn.peer];
 			delete State.Players[conn.peer];
 		}
 	};
@@ -126,7 +142,7 @@ function initPlayer(conn) {
 	let initConnections = () => {
 		conn.on('data', (data) => {
 			if (data.type == Enum.SyncType.PlayerAdded) {
-				if (data.id === clientId || connectedPeers[data.id]) return;
+				if (data.id === clientId || ConnectedPeers[data.id]) return;
 
 				if (clientId < data.id) {
 					let newConn = peer.connect(data.id);
@@ -145,7 +161,7 @@ function initPlayer(conn) {
 			}
 
 			if (data.type == Enum.SyncType.InvokeOtherPlayers) {
-				Object.keys(connectedPeers).forEach(id => {
+				Object.keys(ConnectedPeers).forEach(id => {
 					if (id == conn.peer) return;
 					console.log(`Sending other peer id to ${conn.peer}, with id ${id}.`)
 					sendData(Enum.SyncType.PlayerAdded, { id: id }, conn);
@@ -154,7 +170,7 @@ function initPlayer(conn) {
 				return;
 			}
 
-			Object.values(dataRecievedCallbacks).forEach(callback => {
+			Object.values(DataRecievedCallbacks).forEach(callback => {
 				callback(data);
 			});
 		});
@@ -195,18 +211,18 @@ peer.on('connection', (conn) => {
  * @returns {void}
  */
 export function sendData(type, data, conn) {
-	if (Object.keys(connectedPeers).length === 0) return;
+	if (Object.keys(ConnectedPeers).length === 0) return;
 
 	data.type = type;
 
-	Object.values(dataSendingCallbacks).forEach(callback => {
+	Object.values(DataSendingCallbacks).forEach(callback => {
 		callback(data);
 	});
 
 	if (conn) conn.send(data);
 	else {
-		Object.keys(connectedPeers).forEach(id => {
-			let peerConn = connectedPeers[id];
+		Object.keys(ConnectedPeers).forEach(id => {
+			let peerConn = ConnectedPeers[id];
 			peerConn.send(data);
 		});
 	}
@@ -219,7 +235,7 @@ export function sendData(type, data, conn) {
  * @returns {K}
  */
 export function onPlayerAdded(callback, name) {
-	playerAddedCallbacks[name] = callback;
+	PlayerAddedCallbacks[name] = callback;
 	return name;
 }
 
@@ -230,7 +246,7 @@ export function onPlayerAdded(callback, name) {
  * @returns {K}
  */
 export function onPlayerRemoved(callback, name) {
-	playerRemovedCallbacks[name] = callback;
+	PlayerRemovedCallbacks[name] = callback;
 	return name;
 }
 
@@ -243,7 +259,7 @@ export function onPlayerRemoved(callback, name) {
  * @returns {K}
  */
 export function onDataRecieved(type, callback, name) {
-	dataRecievedCallbacks[name] = (data) => {
+	DataRecievedCallbacks[name] = (data) => {
 		if (data && data.type === type) {
 			callback(data);
 		}
@@ -260,7 +276,7 @@ export function onDataRecieved(type, callback, name) {
  * @returns {K}
  */
 export function onDataSending(type, callback, name) {
-	dataSendingCallbacks[name] = (data) => {
+	DataSendingCallbacks[name] = (data) => {
 		if (data && data.type === type) {
 			callback(data);
 		}
@@ -280,7 +296,7 @@ export function getClientId() {
  * @returns {any?}
  */
 export function getConn(id) {
-	return connectedPeers[id];
+	return ConnectedPeers[id];
 }
 
 /**
@@ -298,7 +314,6 @@ export async function connectToPeer(id) {
 		success = true;
 
 		console.log('Successfully connected to the host!')
-		alert('Connected successfully!');
 
 		initPlayer(conn);
 	});

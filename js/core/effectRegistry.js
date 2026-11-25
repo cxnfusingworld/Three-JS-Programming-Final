@@ -34,11 +34,11 @@ function removeFunctions(obj) {
 			.filter(item => item !== undefined);
 	}
 
-	const cleanObj = {};
+	let cleanObj = {};
 	Object.keys(obj).forEach(key => {
-		const value = obj[key];
+		let value = obj[key];
 		if (typeof (value) !== 'function') {
-			const cleaned = removeFunctions(value);
+			let cleaned = removeFunctions(value);
 			if (cleaned !== undefined) {
 				cleanObj[key] = cleaned;
 			}

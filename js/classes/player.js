@@ -37,11 +37,12 @@ export class Player {
 
 		this.health = 100;
 		this.maxHealth = 100;
+		
 		this.velocity = new THREE.Vector3(0, 0, 0);
 		this.isGrounded = true;
 
-		const geometry = new THREE.CapsuleGeometry(0.5, 1, 10, 20);
-		const material = new THREE.MeshStandardMaterial({
+		let geometry = new THREE.CapsuleGeometry(0.5, 1, 10, 20);
+		let material = new THREE.MeshStandardMaterial({
 			color: new THREE.Color().setRGB(0.2, 0.4, 1),
 			emissive: new THREE.Color().setRGB(0.2, 0.4, 1),
 			emissiveIntensity: 4,
@@ -65,6 +66,11 @@ export class Player {
 	 * @param {number} dt
 	 */
 	update(dt) {
+		if (this.health <= 0) {
+			this.mesh.visible = false;
+			return;
+		} else this.mesh.visible = true;
+
 		let moveX = 0;
 		let moveZ = 0;
 		if (this.input.isKeyDown('KeyW') || this.input.isKeyDown('ArrowUp')) moveZ -= 1;
@@ -77,20 +83,20 @@ export class Player {
 			moveZ *= DIAGONAL_MOVE_FACTOR;
 		}
 
-		const cameraForward = new THREE.Vector3();
+		let cameraForward = new THREE.Vector3();
 		State.Camera.getWorldDirection(cameraForward);
 		cameraForward.y = 0;
 		cameraForward.normalize();
 
-		const cameraRight = new THREE.Vector3();
+		let cameraRight = new THREE.Vector3();
 		cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0)).normalize();
 
-		const moveDir = new THREE.Vector3();
+		let moveDir = new THREE.Vector3();
 		moveDir.addScaledVector(cameraForward, -moveZ);
 		moveDir.addScaledVector(cameraRight, moveX);
 
-		const targetX = moveDir.x * this.speed;
-		const targetZ = moveDir.z * this.speed;
+		let targetX = moveDir.x * this.speed;
+		let targetZ = moveDir.z * this.speed;
 
 		this.velocity.x = THREE.MathUtils.lerp(this.velocity.x, targetX, this.acceleration * dt);
 		this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, targetZ, this.acceleration * dt);
@@ -127,8 +133,7 @@ export class Player {
 
 			x: this.mesh.position.x,
 			y: this.mesh.position.y,
-			z: this.mesh.position.z,
-			rotation: this.mesh.rotation.y
+			z: this.mesh.position.z
 		});
 	}
 }

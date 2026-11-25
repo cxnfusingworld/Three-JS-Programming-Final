@@ -15,11 +15,22 @@ import { CooldownManager, InputHandler } from "./utils.js"
  *  Clock: THREE.Clock,
  *  Camera: THREE.PerspectiveCamera,
  *  Player: Player,
- *  Players: Object.<string, { Connection: any, Mesh: THREE.Mesh, MeshAdded: boolean }>,
+ *  Players: Object.<string, { 
+	* Connection: any, 
+	* Mesh: THREE.Mesh, 
+	* MeshAdded: boolean,
+	* State: {
+		* Name: string,
+		* Kills: number,
+		* Health: number,
+	* }
+ * 	}>,
  *  Input: InputHandler,
  *  DataManager: DataManager,
  *  CooldownManager: CooldownManager,
  *  DeltaTime: number,
+ * 	Kills: number,
+ * 	GameMode?: "FFA" | "Deathmatch"
  * }} State
  */
 
@@ -31,4 +42,5 @@ import { CooldownManager, InputHandler } from "./utils.js"
 export const State = {
 	Players: {},
 	DeltaTime: 0.1,
+	Kills: 0,
 }

@@ -62,7 +62,7 @@ export class FireballAbility {
 				let conn = playerData && playerData.Connection;
 				if (!conn) return;
 
-				sendData(Enum.SyncType.Damage, { damage: 40 }, conn);
+				sendData(Enum.SyncType.Damage, { id: getClientId(), damage: 40 }, conn);
 			},
 			onFloorHit: (finalPos) => {
 				EffectRegistry.spawnEffect("Explosion", {
@@ -88,7 +88,7 @@ export class FireballAbility {
 						let conn = playerData && playerData.Connection;
 						if (!conn) return;
 
-						sendData(Enum.SyncType.Damage, { damage: 25 }, conn);
+						sendData(Enum.SyncType.Damage, { id: getClientId(), damage: 25 }, conn);
 						sendData(Enum.SyncType.ApplyVelocity, { y: 20 }, conn);
 					}
 				}, true)

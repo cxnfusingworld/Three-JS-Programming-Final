@@ -19,10 +19,10 @@ export class World {
 	}
 
 	setupLights() {
-		const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+		let ambient = new THREE.AmbientLight(0xffffff, 0.4);
 		this.scene.add(ambient);
 
-		const sun = new THREE.DirectionalLight(0xffffff, 0.85);
+		let sun = new THREE.DirectionalLight(0xffffff, 0.85);
 		sun.position.set(10, 20, 10);
 		sun.castShadow = true;
 
@@ -41,21 +41,21 @@ export class World {
 	}
 
 	createBaseplate() {
-		const geometry = new THREE.PlaneGeometry(Config.MAP_SIZE, Config.MAP_SIZE);
-		const material = new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(0.1, 1, 0.2) });
+		let geometry = new THREE.PlaneGeometry(Config.MAP_SIZE, Config.MAP_SIZE);
+		let material = new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(0.1, 1, 0.2) });
 		this.floor = new THREE.Mesh(geometry, material);
 
 		this.floor.rotation.x = -Math.PI / 2;
 		this.floor.receiveShadow = true;
 		this.scene.add(this.floor);
 
-		const grid = new THREE.GridHelper(Config.MAP_SIZE, Config.MAP_SIZE, new THREE.Color().setRGB(0, 0.23, 0.1), new THREE.Color().setRGB(0.08, 0.8, 0.15));
+		let grid = new THREE.GridHelper(Config.MAP_SIZE, Config.MAP_SIZE, new THREE.Color().setRGB(0, 0.23, 0.1), new THREE.Color().setRGB(0.08, 0.8, 0.15));
 		this.scene.add(grid);
 	}
 
 	createRayCollider() {
-		const geometry = new THREE.PlaneGeometry(Config.MAP_SIZE * 2, Config.MAP_SIZE * 2);
-		const material = new THREE.MeshStandardMaterial({ opacity: 0, transparent: true, depthWrite: false });
+		let geometry = new THREE.PlaneGeometry(Config.MAP_SIZE * 2, Config.MAP_SIZE * 2);
+		let material = new THREE.MeshStandardMaterial({ opacity: 0, transparent: true, depthWrite: false });
 		this.collider = new THREE.Mesh(geometry, material);
 
 		this.collider.rotation.x = -Math.PI / 2;

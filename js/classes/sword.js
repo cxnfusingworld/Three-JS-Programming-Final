@@ -22,10 +22,10 @@ export class Sword {
 		this.pointer = new THREE.Vector2();
 		this.lookDir = new THREE.Vector3();
 
-		const geometry = new THREE.ConeGeometry(0.1, 2.5);
+		let geometry = new THREE.ConeGeometry(0.1, 2.5);
 		geometry.rotateX(THREE.MathUtils.degToRad(90));
 
-		const material = new THREE.MeshStandardMaterial({
+		let material = new THREE.MeshStandardMaterial({
 			color: new THREE.Color().setRGB(1, 0.5, 0),
 			emissive: new THREE.Color().setRGB(1, 0.5, 0),
 			emissiveIntensity: 3,
