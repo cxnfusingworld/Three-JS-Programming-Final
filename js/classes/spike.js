@@ -5,31 +5,31 @@ import * as THREE from 'three';
 //~ Public API
 
 export class Spike {
-    /**
-     * @param {THREE.scene} scene 
-     * @param {number} z 
-     * @param {number} x 
-     */
-    constructor(scene, x, z) {
-        const geometry = new THREE.ConeGeometry(0.5, 1.5, 20);
-        const material = new THREE.MeshStandardMaterial({ 
-            color: new THREE.Color().setRGB(1, 0, 0),
-            emissive: new THREE.Color().setRGB(1, 0, 0),
-            emissiveIntensity: 4,
-         });
+	/**
+	 * @param {THREE.scene} scene
+	 * @param {number} z
+	 * @param {number} x
+	 */
+	constructor(scene, x, z) {
+		const geometry = new THREE.ConeGeometry(0.5, 1.5, 20);
+		const material = new THREE.MeshStandardMaterial({
+			color: new THREE.Color().setRGB(1, 0, 0),
+			emissive: new THREE.Color().setRGB(1, 0, 0),
+			emissiveIntensity: 4,
+		});
 
-        this.mesh = new THREE.Mesh(geometry, material);
-        this.mesh.position.set(x, 0.75, z);
-        this.mesh.castShadow = true;
-        
-        scene.add(this.mesh);
-    }
+		this.mesh = new THREE.Mesh(geometry, material);
+		this.mesh.position.set(x, 0.75, z);
+		this.mesh.castShadow = true;
 
-    /**
-     * @param {THREE.Mesh} playerMesh
-     */
-    checkCollision(playerMesh) {
-        const distance = this.mesh.position.distanceTo(playerMesh.position);
-        return distance < 1.0;
-    }
+		scene.add(this.mesh);
+	}
+
+	/**
+	 * @param {THREE.Mesh} playerMesh
+	 */
+	checkCollision(playerMesh) {
+		const distance = this.mesh.position.distanceTo(playerMesh.position);
+		return distance < 1.0;
+	}
 }

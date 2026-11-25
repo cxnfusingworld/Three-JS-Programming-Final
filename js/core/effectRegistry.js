@@ -24,63 +24,64 @@ import { sendData } from "./net.js";
  * @returns {T}
  */
 function removeFunctions(obj) {
-    if (obj === null || typeof(obj) !== 'object') {
-        return typeof(obj) === 'function' ? undefined : obj;
-    }
+	if (obj === null || typeof (obj) !== 'object') {
+		return typeof (obj) === 'function' ? undefined : obj;
+	}
 
-    if (Array.isArray(obj)) {
-        return obj
-            .map(item => this.removeFunctions(item))
-            .filter(item => item !== undefined);
-    }
+	if (Array.isArray(obj)) {
+		return obj
+			.map(item => this.removeFunctions(item))
+			.filter(item => item !== undefined);
+	}
 
-    const cleanObj = {};
-    for (const key of Object.keys(obj)) {
-        const value = obj[key];
-        if (typeof(value) !== 'function') {
-            const cleaned = removeFunctions(value);
-            if (cleaned !== undefined) {
-                cleanObj[key] = cleaned;
-            }
-        }
-    }
-    return cleanObj;
+	const cleanObj = {};
+	Object.keys(obj).forEach(key => {
+		const value = obj[key];
+		if (typeof (value) !== 'function') {
+			const cleaned = removeFunctions(value);
+			if (cleaned !== undefined) {
+				cleanObj[key] = cleaned;
+			}
+		}
+	});
+	
+	return cleanObj;
 }
 
 //~ Public API
 
 class EffectRegistryCreator {
-    constructor() {
-        this.effects = {
-            "Explosion": Explosion,
-            "Shockwave": Shockwave,
-            "Fireball": Fireball,
-        };
-    }
+	constructor() {
+		this.effects = {
+			"Explosion": Explosion,
+			"Shockwave": Shockwave,
+			"Fireball": Fireball,
+		};
+	}
 
-    /**
-     * @template {keyof EffectPayloadMap} K
-     * @param {K} effectName 
-     * @param {EffectPayloadMap[K]} data 
-     * @param {boolean?} replicate
-     * @param {EffectPayloadMap[K]?} replicatedData
-     */
-    spawnEffect(effectName, data, replicate, replicatedData) {
-        let effect = this.effects[effectName];
-        if (!effect) {
-            console.log(`No effect with name ${effectName} exists.`);
-            return;
-        }
-        effect(data);
+	/**
+	 * @template {keyof EffectPayloadMap} K
+	 * @param {K} effectName
+	 * @param {EffectPayloadMap[K]} data
+	 * @param {boolean?} replicate
+	 * @param {EffectPayloadMap[K]?} replicatedData
+	 */
+	spawnEffect(effectName, data, replicate, replicatedData) {
+		let effect = this.effects[effectName];
+		if (!effect) {
+			console.log(`No effect with name ${effectName} exists.`);
+			return;
+		}
+		effect(data);
 
-        if (replicate) {
-            replicatedData = removeFunctions(replicatedData || data);
-            sendData(Enum.SyncType.SpawnEffect, {
-                effectName: effectName,
-                data: replicatedData,
-            });
-        }
-    }
+		if (replicate) {
+			replicatedData = removeFunctions(replicatedData || data);
+			sendData(Enum.SyncType.SpawnEffect, {
+				effectName: effectName,
+				data: replicatedData,
+			});
+		}
+	}
 }
 
 export const EffectRegistry = new EffectRegistryCreator();

@@ -19,48 +19,48 @@ import { Fireball } from "../abilities/fireball.js";
 
 const RunningAbilities = [];
 const AbilityRegistry = {
-    "Dash": Dash,
-    "GroundPound": GroundPound,
-    "Fireball": Fireball,
+	"Dash": Dash,
+	"GroundPound": GroundPound,
+	"Fireball": Fireball,
 };
 
 //~ Public API
 
 class AbilityHandlerCreator {
-    constructor() {}
+	constructor() { }
 
-    /**
-     * @param {keyof Enum["Ability"]} name
-     */
-    useAbility(name) {
-        /**
-         * @type {Ability}
-         */
-        let ability = AbilityRegistry[name];
-        
-        if (!ability) {
-            console.warn(`Ability "${name}" not found in registry!`);
-            return;
-        }
+	/**
+	 * @param {keyof Enum["Ability"]} name
+	 */
+	useAbility(name) {
+		/**
+		 * @type {Ability}
+		 */
+		let ability = AbilityRegistry[name];
 
-        let runUpdate = ability.activate();
-        if (runUpdate && typeof ability.update === 'function') {
-            RunningAbilities.push(ability);
-        }
-    }
+		if (!ability) {
+			console.warn(`Ability "${name}" not found in registry!`);
+			return;
+		}
 
-    /**
-     * @param {number} dt 
-     */
-    update(dt) {
-        for (let i = RunningAbilities.length - 1; i >= 0; i--) {
-            let ability = RunningAbilities[i];
-            let stopUpdating = ability.update(dt);
-            if (!stopUpdating) {
-                RunningAbilities.splice(i, 1);
-            }
-        }
-    }
+		let runUpdate = ability.activate();
+		if (runUpdate && typeof ability.update === 'function') {
+			RunningAbilities.push(ability);
+		}
+	}
+
+	/**
+	 * @param {number} dt
+	 */
+	update(dt) {
+		for (let i = RunningAbilities.length - 1; i >= 0; i--) {
+			let ability = RunningAbilities[i];
+			let stopUpdating = ability.update(dt);
+			if (!stopUpdating) {
+				RunningAbilities.splice(i, 1);
+			}
+		}
+	}
 }
 
 export const AbilityHandler = new AbilityHandlerCreator();

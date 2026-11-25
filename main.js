@@ -43,22 +43,22 @@ const composer = new EffectComposer(renderer);
 //~ Helper Functions
 
 function animate() {
-    requestAnimationFrame(animate);
+	requestAnimationFrame(animate);
 
-    let dt = clock.getDelta();
-    dt = Math.min(dt, 0.1);
+	let dt = clock.getDelta();
+	dt = Math.min(dt, 0.1);
 
-    State.DeltaTime = dt;
+	State.DeltaTime = dt;
 
-    AbilityHandler.update(dt);
+	AbilityHandler.update(dt);
 
-    player.update(dt);
-    world.update(dt);
-    
-    camera.position.set(player.mesh.position.x + 20, 20, player.mesh.position.z + 20);
-    camera.lookAt(new THREE.Vector3(player.mesh.position.x, 1, player.mesh.position.z));
+	player.update(dt);
+	world.update(dt);
 
-    composer.render();
+	camera.position.set(player.mesh.position.x + 20, 20, player.mesh.position.z + 20);
+	camera.lookAt(new THREE.Vector3(player.mesh.position.x, 1, player.mesh.position.z));
+
+	composer.render();
 }
 
 //~ Main
@@ -89,15 +89,15 @@ document.body.appendChild(renderer.domElement);
 animate();
 
 window.addEventListener('resize', () => {
-    const newAspectRatio = window.innerWidth / window.innerHeight;
+	const newAspectRatio = window.innerWidth / window.innerHeight;
 
-    camera.left = -Config.VIEW_SIZE * newAspectRatio;
-    camera.right = Config.VIEW_SIZE * newAspectRatio;
-    camera.top = Config.VIEW_SIZE;
-    camera.bottom = -Config.VIEW_SIZE;
+	camera.left = -Config.VIEW_SIZE * newAspectRatio;
+	camera.right = Config.VIEW_SIZE * newAspectRatio;
+	camera.top = Config.VIEW_SIZE;
+	camera.bottom = -Config.VIEW_SIZE;
 
-    camera.updateProjectionMatrix();
+	camera.updateProjectionMatrix();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	composer.setSize(window.innerWidth, window.innerHeight);
 });

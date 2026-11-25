@@ -29,6 +29,6 @@ import { CooldownManager, InputHandler } from "./utils.js"
  * @type {State}
  */
 export const State = {
-    Players: {},
-    DeltaTime: 0.1,
+	Players: {},
+	DeltaTime: 0.1,
 }

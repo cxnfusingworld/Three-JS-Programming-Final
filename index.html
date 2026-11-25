@@ -2,47 +2,69 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Three.js Programming Final</title>
-    <link rel="stylesheet" href="./style.css">
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #ffffff;
-        }
-    </style>
+	<meta charset="UTF-8">
+	<title>Three.js Programming Final</title>
+	<link rel="stylesheet" href="./style.css">
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+			background-color: #ffffff;
+		}
+	</style>
 </head>
 
 <body>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-                "peerjs": "https://esm.sh/peerjs@1.5.4"
-            }
-        }
-    </script>
-    <script type="module" src="./main.js"></script>
+	<!-- Scripts -->
 
-    <div id="ui-container">
-        <div id="main-menu" class="menu-screen">
-            <h1>[ Three.js Programming Final ]</h1>
-            <button id="btn-ffa">// [Host FFA]</button>
-            <button id="btn-teams">// [Host Deathmatch]</button>
+	<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+					"three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+					"peerjs": "https://esm.sh/peerjs@1.5.4"
+				}
+			}
+		</script>
+	<script type="module" src="./main.js"></script>
 
-            <div class="join-row">
-                <secondary_button id="btn-join">// [Join]</secondary_button>
-                <input type="text" id="input-room-code" autocomplete=off placeholder="[Room Code...]" />
-            </div>
-        </div>
+	<!-- Main UI -->
 
-        <div id="lobby-hud" class="hud-panel" style="display: none;">
-            <button id="btn-copy-code" title="Click to copy">[Copy ID]<span id="room-code-display"></span></button>
-            <button id="btn-leave">[Leave]</button>
-        </div>
-    </div>
+	<div id="ui-container">
+		<!-- Main Menu -->
+
+		<div id="main-menu" class="menu-screen">
+			<h1>[ Three.js Programming Final ]</h1>
+			<button id="btn-ffa">// [Host FFA]</button>
+			<button id="btn-teams">// [Host Deathmatch]</button>
+
+			<div class="join-row">
+				<secondary_button id="btn-join">// [Join]</secondary_button>
+				<input type="text" id="input-room-code" autocomplete=off placeholder="[Room Code...]" />
+			</div>
+		</div>
+
+		<!-- In-Game HUD -->
+
+		<div id="lobby-hud" class="hud-panel" style="display: none;">
+			<button id="btn-copy-code" title="Click to copy">[Copy ID]<span id="room-code-display"></span></button>
+			<button id="btn-leave">[Leave]</button>
+		</div>
+
+		<div id="health-hud" class="health-container" style="display: none">
+			<div id="health-bar-bg" class="health-bar">
+				<div id="health-bar-fill" class="health-bar-fill"></div>
+			<div class="health-text">// HP:&nbsp;<span id="health-value">100</span>&nbsp;/&nbsp;<span id="max-health-value">100</span></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Death Screen -->
+
+	<div id="death-screen" class="death-screen" style="display: none">
+		<h1>[You Died]</h1>
+		<button id="btn-respawn">[Respawn]</button>
+	</div>
 </body>
 
 </html>
