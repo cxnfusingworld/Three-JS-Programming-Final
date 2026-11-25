@@ -32,3 +32,8 @@ For those of you reading this considering using AI to create projects or program
 ## Resources
 * [Three.js](https://threejs.org/tsl/) (TSL) used for 3D rendering.
 * [PeerJS](https://peerjs.com/) used for P2P (peer-to-peer) connection and networking.
+## Tools
+* [VSCode](https://code.visualstudio.com/) for coding the project.
+  * [Live Server Extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) for rapid update/playtesting loop.
+* [GitHub](https://github.com) for saving and site hosting.
+  * [Git for VSCode](https://git-scm.com/book/en/v2/Appendix-A:-Git-in-Other-Environments-Git-in-Visual-Studio-Code) to modify and commit files in VSCode.
