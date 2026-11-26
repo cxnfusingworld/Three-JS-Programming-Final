@@ -3,7 +3,7 @@
 /**
  * @typedef {{
  *  PlayerName: string,
- *  Coins: number,
+ *  Currency: number,
  *  Level: number,
  * }} GameData
  */
@@ -11,8 +11,8 @@
 //~ Constants
 
 const TemplateData = {
-	Coins: 0,
 	PlayerName: "Warrior",
+	Currency: 0,
 	Level: 1,
 };
 
@@ -27,7 +27,14 @@ class DataManagerCreator {
 	 * @returns {GameData[K]}
 	 */
 	get(key) {
-		return localStorage.get(key) || TemplateData[key];
+		let savedData = localStorage.get(key);
+		if (!savedData) return TemplateData[key];
+
+		let goalType = typeof(TemplateData[key]);
+		if (goalType === "string") return savedData;
+		if (goalType === "number") return Number(savedData);
+
+		return savedData
 	}
 
 	/**
@@ -36,7 +43,8 @@ class DataManagerCreator {
 	 * @param {GameData[K]} value
 	 */
 	set(key, value) {
-		localStorage.setItem(key, String(value))
+		let goalType = typeof(TemplateData[key]);
+		if (goalType === "string" || goalType === "number") localStorage.setItem(key, String(value));
 	}
 }
 

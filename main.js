@@ -17,7 +17,7 @@ import { Player } from './js/classes/player.js';
 
 import './js/core/net.js';
 import './js/core/sync.js';
-import './js/core/ui.js';
+import { updateOverheadUIs } from './js/core/ui.js';
 
 //~ Constants
 
@@ -57,6 +57,8 @@ function animate() {
 
 	camera.position.set(player.mesh.position.x + 20, 20, player.mesh.position.z + 20);
 	camera.lookAt(new THREE.Vector3(player.mesh.position.x, 1, player.mesh.position.z));
+
+	updateOverheadUIs(true, false);
 
 	composer.render();
 }

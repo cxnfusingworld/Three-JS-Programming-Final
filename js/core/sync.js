@@ -6,7 +6,7 @@ import { State } from './state.js';
 import { Enum } from './enums.js';
 import { EffectRegistry } from './effectRegistry.js';
 import { applyVelocity } from './utils.js';
-import { updateDeathScreen, updateHealthUI, updateLeaderboardUI } from './ui.js';
+import { updateDeathScreen, updateHealthUI, updateLeaderboardUI, updateOverheadUI, updateOverheadUIs } from './ui.js';
 
 //~ Constants
 
@@ -19,6 +19,22 @@ const PlayerMaterial = new THREE.MeshStandardMaterial({
 
 //~ Helper Functions
 
+function createOverheadUI(peerId, playerName) {
+	let container = document.getElementById('world-ui');
+	if (!container) return;
+
+	let tag = document.createElement('div');
+	tag.id = `overhead-${peerId}`;
+	tag.className = 'player-tag';
+	tag.innerHTML = `
+		<div class="player-tag-name">[${playerName}]</div>
+		<div class="remote-health-bar">
+			<div id="hp-fill-${peerId}" class="remote-health-fill" style="width: 100%;"></div>
+		</div>
+	`;
+	container.appendChild(tag);
+}
+
 /**
  * @param {string} id
  */
@@ -29,12 +45,18 @@ function syncPlayer(id) {
 	State.Players[id].Mesh = playerMesh;
 	State.Players[id].MeshAdded = false;
 
+	if (!State.Players[id].State) State.Players[id].State = { Health: 100, Kills: 0 };
+
+	createOverheadUI(id, State.Players[id].State.Name || id.slice(0, 6));
+	updateLeaderboardUI();
+
 	sendData(Enum.SyncType.PlayerUpdate, {
 		id: getClientId(),
-
 		x: State.Player.mesh.position.x,
 		y: State.Player.mesh.position.y,
-		z: State.Player.mesh.position.z
+		z: State.Player.mesh.position.z,
+		health: State.Player.health,
+		kills: State.Kills,
 	}, State.Players[id].Connection);
 }
 
@@ -45,8 +67,14 @@ function removePlayer(id) {
 	let playerData = State.Players[id];
 	if (!playerData) return;
 
-	State.World.scene.remove(playerData.Mesh);
-	console.log(`Removed mesh for player: ${id}`);
+	if (playerData.Mesh) {
+		State.World.scene.remove(playerData.Mesh);
+	}
+
+	let overheadUI = document.getElementById(`overhead-${id}`);
+	if (overheadUI) overheadUI.remove();
+
+	console.log(`Removed mesh and overhead UI for player: ${id}`);
 }
 
 //~ Main
@@ -69,19 +97,31 @@ onDataRecieved(Enum.SyncType.PlayerUpdate, (data) => {
 	playerData.Mesh.position.y = data.y || playerData.Mesh.position.y;
 	playerData.Mesh.position.z = data.z || playerData.Mesh.position.z;
 
-	playerData.State.Health = data.health || playerData.State.Health;
+	if (data.health !== undefined) {
+		playerData.State.Health = data.health;
+		updateOverheadUI(data.id, false, true);
+	}
 
-	if (data.kills) {
+	if (data.kills !== undefined) {
 		playerData.State.Kills = data.kills;
 		updateLeaderboardUI();
 	}
 }, "PLAYER_UPDATE_SYNC");
+
 onDataRecieved(Enum.SyncType.PlayerSpawnUpdate, (data) => {
 	let playerData = State.Players[data.id];
 	if (!playerData) return;
 
 	let spawned = data.spawned;
 	playerData.Mesh.visible = spawned;
+	
+	if (spawned) playerData.State.Health = 100;
+
+	let overheadUI = document.getElementById(`overhead-${data.id}`);
+	if (overheadUI) {
+		overheadUI.style.display = spawned ? 'flex' : 'none';
+		updateOverheadUIs();
+	}
 }, "PLAYER_SPAWN_UPDATE_SYNC");
 
 // Damage & Kills
@@ -94,14 +134,13 @@ onDataRecieved(Enum.SyncType.Damage, (data) => {
 
 	console.log(`Took ${data.damage} damage, now at ${State.Player.health} HP.`);
 	if (State.Player.health <= 0) {
-		console.log("You died.")
-
+		console.log("You died.");
 		updateDeathScreen(true);
 
 		sendData(Enum.SyncType.PlayerKilled, {
 			victimId: getClientId(),
 			killerId: data.id,
-		}, State.Players[data.id].Connection)
+		}, State.Players[data.id].Connection);
 	}
 
 	sendData(Enum.SyncType.PlayerUpdate, {
@@ -127,4 +166,4 @@ onDataRecieved(Enum.SyncType.SpawnEffect, (data) => {
 	EffectRegistry.spawnEffect(data.effectName, data.data, false);
 }, "SPAWN_EFFECT_SYNC");
 
-onDataRecieved(Enum.SyncType.ApplyVelocity, applyVelocity, "APPLY_VELOCITY_SYNC")
+onDataRecieved(Enum.SyncType.ApplyVelocity, applyVelocity, "APPLY_VELOCITY_SYNC");

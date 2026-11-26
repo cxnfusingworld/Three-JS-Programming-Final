@@ -1,5 +1,6 @@
 //~ Imports
 
+import * as THREE from "three";
 import { Enum } from "./enums.js";
 import { connectToPeer, getClientId, sendData } from "./net.js";
 import { State } from "./state.js";
@@ -8,7 +9,7 @@ import { sleep } from "./utils.js";
 //~ Constants
 
 const MainMenu = document.getElementById("main-menu");
-const LobbyHUD = document.getElementById("lobby-hud");
+const LobbyUI = document.getElementById("lobby-ui");
 const DeathScreen = document.getElementById("death-screen");
 
 const HealthBar = document.getElementById("health-bar-fill");
@@ -19,6 +20,8 @@ const JoinButton = document.getElementById("btn-join");
 const CopyButton = document.getElementById("btn-copy-code");
 const LeaveButton = document.getElementById("btn-leave");
 const RespawnButton = document.getElementById("btn-respawn");
+
+const OverheadVector = new THREE.Vector3();
 
 //~ Variables
 
@@ -51,7 +54,7 @@ export function updateHealthUI(enabled) {
 	HealthValue.innerText = Math.min(Math.max(Math.floor(State.Player.health), 0), State.Player.maxHealth);
 	MaxHealthValue.innerText = Math.max(Math.floor(State.Player.maxHealth), 0);
 
-	document.getElementById("health-hud").style.display = enabled !== false ? "flex" : "none";
+	document.getElementById("health-ui").style.display = enabled !== false ? "flex" : "none";
 }
 
 /**
@@ -99,11 +102,68 @@ export function updateLeaderboardUI() {
 	});
 }
 
+/**
+ * @param {string} id 
+ * @param {boolean?} updatePosition
+ * @param {boolean?} updateHealth
+ */
+export function updateOverheadUI(id, updatePosition, updateHealth) {
+	let playerData = State.Players[id];
+	if (!playerData) return;
+
+	let overheadUI = document.getElementById(`overhead-${id}`);
+	if (!overheadUI || !playerData.Mesh) return;
+
+	if (!playerData.Mesh.visible) {
+		overheadUI.style.display = 'none';
+		return;
+	} else {
+		if (overheadUI.style.display === 'none') {
+			overheadUI.style.display = 'flex';
+		}
+	}
+
+	if (updatePosition !== false) {
+		OverheadVector.copy(playerData.Mesh.position);
+		OverheadVector.y += 1.4;
+
+		OverheadVector.project(State.Camera);
+
+		if (OverheadVector.z > 1) {
+			overheadUI.style.display = 'none';
+			return;
+		}
+
+		let x = (OverheadVector.x * 0.5 + 0.5) * window.innerWidth;
+		let y = (-(OverheadVector.y * 0.5) + 0.5) * window.innerHeight;
+
+		overheadUI.style.transform = `translate(-50%, -100%) translate(${x}px, ${y}px)`;
+	}
+
+	if (updateHealth !== false) {
+		let fill = document.getElementById(`hp-fill-${id}`);
+		if (!fill) return;
+
+		if (fill) {
+			let percent = Math.max(0, Math.min(100, (State.Players[id].State.Health / 100) * 100));
+			fill.style.width = `${percent}%`;
+		}
+	}
+}
+
+/**
+ * @param {boolean?} updatePosition
+ * @param {boolean?} updateHealth
+ */
+export function updateOverheadUIs(updatePosition, updateHealth) {
+	Object.entries(State.Players).forEach(([id]) => updateOverheadUI(id, updatePosition, updateHealth));
+}
+
 //~ Main
 
 document.getElementById("btn-ffa").addEventListener("click", () => {
 	MainMenu.style.display = "none";
-	LobbyHUD.style.display = "flex";
+	LobbyUI.style.display = "flex";
 	updateHealthUI(true);
 
 	State.GameMode = "FFA";
@@ -119,8 +179,10 @@ JoinButton.addEventListener("click", async () => {
 		return;
 	}
 
+	State.GameMode = "FFA"
+
 	MainMenu.style.display = "none";
-	LobbyHUD.style.display = "flex";
+	LobbyUI.style.display = "flex";
 	updateHealthUI(true);
 });
 
@@ -139,10 +201,7 @@ CopyButton.addEventListener("click", async () => {
 
 LeaveButton.addEventListener("click", () => {
 	Object.values(State.Players).forEach(data => data.Connection.close());
-	Object.keys(State.Players).forEach(id => {
-		if (State.Players[id].Mesh) State.Scene.remove(State.Players[id].Mesh);
-		delete State.Players[id];
-	});
+	Object.keys(State.Players).forEach(id => State.Players[id].Connection.disconnect());
 
 	resetState();
 	updateHealthUI(false);
@@ -150,7 +209,7 @@ LeaveButton.addEventListener("click", () => {
 	State.Kills = 0;
 	State.GameMode = undefined;
 
-	LobbyHUD.style.display = "none";
+	LobbyUI.style.display = "none";
 	MainMenu.style.display = "flex";
 });
 
@@ -180,5 +239,5 @@ new Promise(async (resolve) => {
 		if (input.key === 'Tab') {
 			document.getElementById('leaderboard').style.display = 'none';
 		}
-	}, "Leaderboard_Close");	
+	}, "Leaderboard_Close");
 });
